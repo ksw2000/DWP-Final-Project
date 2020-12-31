@@ -1,0 +1,337 @@
+#wrapper{
+    align-items: stretch;
+    display: flex;
+}
+
+#tab-container{
+    border-left: 1px solid #5b5a69;
+    box-sizing: border-box;
+    max-width: 250px;
+    padding: 15px 10px 50px;
+    width: 100%;
+}
+
+#tab-container select{
+    background-color: transparent;
+    border-color: transparent;
+    color: #fff;
+    font-size: 20px;
+    text-align: center;
+    text-align-last: center;
+    width: 80%;
+}
+
+#tab-container select option{
+    background-color: #4b4c3c !important;
+    color: #fff;
+}
+
+#setting-container{
+    border-left: 1px solid #5b5a69;
+    margin: 0px auto;
+    min-height: 100%;
+    width: 100%;
+    padding-bottom: 40px;
+}
+
+#setting-container .tab{
+    display: none; /*預設全部關閉*/
+}
+
+#setting-container .tab.now{
+    display: block;
+}
+
+.setting-area{
+    box-sizing: border-box;
+    max-width: 400px;
+    padding: 10px;
+    width: 100%;
+}
+
+.setting-area .setting-area-title{
+    font-size: 1.5em;
+}
+
+.setting-area .col{
+    max-width: 300px;
+    margin: 0px auto;
+    padding: 10px 0px;
+    width: 100%;
+}
+
+#select-tab{
+    display: none;
+}
+
+@media screen and (max-width: 920px){
+    #bio-container{
+        max-width: 260px;
+    }
+
+    #tab-container{
+        max-width: 180px;
+    }
+}
+
+@media screen and (max-width: 800px){
+    #tab-container{
+        border-left: 0px;
+        text-align: center;
+    }
+
+    #bio-container{
+        display: none;
+    }
+
+    .setting-area{
+        margin: 0px auto;
+    }
+}
+
+@media screen and (max-width: 600px){
+    #wrapper{
+        flex-direction: column;
+    }
+
+    #select-tab{
+        display: inline-block;
+    }
+
+    #setting-container{
+        border-width: 0px;
+        box-sizing: border-box;
+        margin-left: 0px;
+        padding-top: 60px;
+    }
+
+    #bio-container{
+        max-width: none;
+    }
+
+    #tab-container{
+        background-color: #4b4c3c;
+        max-width: none;
+        padding: 10px 0px;
+        position: fixed;
+        top: 0px;
+        z-index: 11;
+    }
+
+    .hide-bigger-than-600px{
+        display: none;
+    }
+}
+
+#tab-container .tab-list.now{
+    color: #0082df;
+    font-weight: bolder;
+}
+
+#tab-container .tab-list{
+    background-color: transparent;
+    border-bottom: 1px solid #8e918e;
+    box-sizing: border-box;
+    color: inherit;
+    width: 100%;
+    padding: 0px;
+}
+
+#tab-container .tab-list a{
+    box-sizing: border-box;
+    color: inherit;
+    display: block;
+    height: 100%;
+    padding: 10px;
+}
+
+#tab-container .tab-list:hover{
+    color: #0094ff;
+}
+
+/*switch button*/
+.onoffswitch {
+    position: relative; width: 44px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.onoffswitch-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+.onoffswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    height: 18px; padding: 0; line-height: 18px;
+    border: 2px solid #9f9f9f; border-radius: 18px;
+    background-color: transparent;
+    transition: background-color 0.3s ease-in;
+}
+.onoffswitch-label:before {
+    content: "";
+    display: block; width: 18px; margin: 0px;
+    background: #e4e4e4;
+    position: absolute; top: 0; bottom: 0;
+    right: 24px;
+    border: 2px solid #adacac; border-radius: 18px;
+    transition: all 0.3s ease-in 0s;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label {
+    background-color: #1da1f2;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label, .onoffswitch-checkbox:checked + .onoffswitch-label:before {
+   border-color: #415e6f;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label:before {
+    right: 0px;
+}
+
+.user-list-item, .punish-list-item{
+    align-items: center;
+    background-color: transparent;
+    cursor: pointer;
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px 5px;
+    transition: background-color 500ms;
+}
+.user-list-item:hover, .punish-list-item:hover,.file-list-item-header:hover, .board-list-item:hover{
+    border-radius: 5px;
+    background-color: #d9dcc8;
+}
+
+.punish-list-item i.punish-list-item-close:hover{
+    color: #fa5c5c;
+}
+
+.user-list-item img, .punish-list-item img{
+    border-radius: 50%;
+    height: 50px;
+    margin-right: 20px;
+    width: 50px;
+}
+.user-list-item .user-list-item-info, .punish-list-item .punish-list-item-info{
+    width: 100%;
+}
+.user-list-item .user-list-item-info p, .punish-list-item .punish-list-item-info p{
+    font-size: 0.8em;
+    margin: 0px;
+    padding: 0px;
+}
+.user-list-item i.user-list-item-more, .punish-list-item i.punish-list-item-close{
+    color: #8e918e;
+    cursor: pointer;
+    transition: color 500ms;
+}
+
+.setting-user-area p{
+    margin: 5px 0px;
+}
+
+.setting-user-area .board-list-short-tag{
+    background-color: #0072aa;
+    border-radius: 15px;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    margin: 3px;
+    padding: 3px 10px;
+}
+
+.setting-user-area .board-list-short-tag:hover{
+    background-color: #548da8;
+}
+
+.file-list-item-header{
+    align-items: center;
+    background-color: transparent;
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px 5px;
+    transition: background-color 500ms;
+}
+
+.file-list-item-header a{
+    color: inherit;
+    display: block;
+    width: 100%;
+}
+
+.file-list-item-header i, .board-list-item-main i{
+    color: inherit;
+    font-size: 1em;
+}
+
+.file-list-item-body{
+    display: none;
+}
+
+.file-list-item-body p{
+    font-size: 0.85em;
+    margin: 10px 0px;
+}
+
+.file-list-item-body img{
+    width: 100%;
+}
+
+.file-list-item-body .confirm-delete-button{
+    display: none;
+}
+
+.board-list-item{
+    align-items: center;
+    background-color: transparent;
+    cursor: pointer;
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px 5px;
+    transition: background-color 500ms;
+}
+
+.board-list-item-main{
+    width: 100%;
+}
+
+#setting-board-area{
+    border: 1px solid #8e918e;
+}
+
+#setting-board-area p{
+    margin: 5px 0px;
+}
+
+.horizontal-list{
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+}
+
+.horizontal-list li{
+    background-color: #0072aa;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 3px;
+    padding: 3px 3px 3px 10px;
+}
+
+.horizontal-list li:hover{
+    background-color: #3282a8;
+}
+
+.horizontal-list li:hover::after{
+    font-weight: bold;
+}
+
+.horizontal-list li::after{
+    content: '×';
+    display: inline-block;
+    font-size: 1.1em;
+    margin-left: 2px;
+    text-align: center;
+    height: 20px;
+    width: 20px;
+}
