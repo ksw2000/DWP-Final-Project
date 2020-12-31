@@ -106,14 +106,27 @@ if($_GET['type'] == 'edit_bio'){
     echo json_encode($data);
     exit();
 }else if($_GET['type'] == 'change_language'){
-    if(empty($_POST['lang']) || ($_POST['lang'] != 'zh-tw' && $_POST['lang'] != 'zh-cn')){
+    if(empty($_POST['lang']) || (
+        $_POST['lang'] != 'zh-tw' && $_POST['lang'] != 'zh-cn' && $_POST['lang'] != 'en'
+    )){
         $data['Err'] = 'HTTP POST parameters err';
         echo json_encode($data);
         exit();
     }
 
-    /*0: 繁中 1: 簡中*/
-    $lang_code = ($_POST['lang'] == 'zh-tw')? 0 : 1;
+    /*0: 繁中 1: 簡中 2: 英文*/
+    switch($_POST['lang']){
+        case 'zh-tw':
+            $lang_code = 0;
+            break;
+        case 'zh-cn':
+            $lang_code = 1;
+            break;
+        case 'en':
+            $lang_code = 2;
+            break;
+    }
+
     if(!User::change_language($_SESSION['login_id'], $lang_code)){
         $data['Err'] = 'Error: Database';
         echo json_encode($data);
@@ -130,7 +143,7 @@ if($_GET['type'] == 'edit_bio'){
         echo json_encode($data);
         exit();
     }
-    
+
     if(User::id_existed($_POST['id'])){
         $data['Err'] = 'ID existed';    // 已綁定前端
         echo json_encode($data);
