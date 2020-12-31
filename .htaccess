@@ -1,0 +1,23 @@
+<IfModule mod_rewrite.c>
+RewriteEngine on
+DirectoryIndex index.php
+
+RewriteBase /
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+RewriteRule ^(.*?)/$ $1 [R=301,L]
+
+RewriteRule ^login$ /login.php?%{QUERY_STRING} [L]
+RewriteRule ^function/(.*?)$ /?id=function&include=$1&%{QUERY_STRING} [L]
+RewriteRule ^article/(.*)$ /?id=article&serial=$1&%{QUERY_STRING} [L]
+RewriteRule ^user/(.*)$ /?id=user&visted-user=$1&%{QUERY_STRING} [L]
+RewriteRule ^chat/(.*)$ /?id=chat&visted-user=$1&%{QUERY_STRING} [L]
+RewriteRule ^user$ /?id=user&%{QUERY_STRING} [L]
+RewriteRule ^inbox$ /?id=inbox&%{QUERY_STRING} [L]
+RewriteRule ^edit/(.*)$ /add?edit&serial=$1 [L]
+RewriteRule ^add$ /?id=add&%{QUERY_STRING} [L]
+RewriteRule ^setting$ /?id=setting&%{QUERY_STRING} [L]
+RewriteRule ^assets/private/profile/(.*)$ assets/private/profile/$1?%{QUERY_STRING} [L]
+RewriteRule ^assets/private/(.*)$ /?id=private_assets&url=$1 [L]
+
+</IfModule>
