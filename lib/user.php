@@ -398,10 +398,11 @@ class UserList{
         $db = new DB;
         $this->_user_list = $db->query("SELECT ID, NAME, PROFILE,
                     PERMISSION, ONLINE, DIVING
-                    FROM user WHERE ID <> ? LIMIT ?, ?", $user_id, $from, $num);
+                    FROM user WHERE ID <> ? LIMIT ?, ?",
+                    $this->_user_id, $from, $num);
 
         $num++;
-        $res2 = $db->query("SELECT COUNT(ID) as num FROM user WHERE ID <> ? LIMIT ?, ?", $user_id, $from, $num);
+        $res2 = $db->query("SELECT COUNT(ID) as num FROM user WHERE ID <> ? LIMIT ?, ?", $this->_user_id, $from, $num);
         $row2 = $res2->fetch_assoc();
 
         $this->_next = ($row2['num'] == $num)? $from + $num - 1 : -1;
