@@ -1,5 +1,9 @@
 <?php
-function text_r($tw, $cn, $en=""){
+function text_r($tw, $cn, $en = null){
+    if($en == null){
+        $en = "英譯：".$tw;
+    }
+
     global $_SESSION;
     if(empty($_SESSION['user_info'])){
         $lang = 0;
@@ -11,7 +15,7 @@ function text_r($tw, $cn, $en=""){
     if($lang == 2) return $en; //If language sets to 2 return as english
 }
 
-function text($tw, $cn, $en=0){  //get text_r to return the type of text
+function text($tw, $cn, $en = null){  //get text_r to return the type of text
     echo text_r($tw, $cn, $en);
 }
 
