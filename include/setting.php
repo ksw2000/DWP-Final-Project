@@ -17,7 +17,6 @@
             <?php endif;?>
             <?php if($is_manager):?>
             <option value="manage-user"><?php text('用戶管理','用户管理')?></option>
-            <option value="add-new-user"><?php text('註冊新用戶','注册新用户')?></option>
             <option value="manage-board">看板管理</a></div>
             <option value="manage-file"><?php text('檔案管理','文件管理')?></option>
             <?php endif;?>
@@ -29,7 +28,6 @@
             <?php endif;?>
             <?php if($is_manager):?>
             <div class="tab-list" data-tab="manage-user"><a href="javascript: void(0);" onclick="change_tab('manage-user');"><?php text('用戶管理','用户管理')?></a></div>
-            <div class="tab-list" data-tab="add-new-user"><a href="javascript: void(0);" onclick="change_tab('add-new-user');"><?php text('註冊新用戶','注册新用户')?></a></div>
             <div class="tab-list" data-tab="manage-board"><a href="javascript: void(0);" onclick="change_tab('manage-board');">看板管理</a></div>
             <div class="tab-list" data-tab="manage-file"><a href="javascript: void(0);" onclick="change_tab('manage-file');"><?php text('檔案管理','文件管理')?></a></div>
             <?php endif;?>
@@ -65,13 +63,12 @@
                 <div class="setting-area-title"><?php text('選擇語言', '选择语言');?></div>
                 <div class="col">
                     <select class="normal" id="select-language">
-                        <?php if($_SESSION['user_info']['LANGUAGE'] == 1):?>
-                            <option value="zh-cn">简体中文</option>
-                        <?php endif;?>
-                        <option value="zh-tw">繁體中文</option>
-                        <?php if($_SESSION['user_info']['LANGUAGE'] == 0):?>
-                            <option value="zh-cn">简体中文</option>
-                        <?php endif;?>
+                        <?php
+                            $lang = $_SESSION['user_info']['LANGUAGE'];
+                        ?>
+                        <option value="zh-tw"<?php if($lang===0) echo " selected"?>>繁體中文</option>
+                        <option value="zh-cn"<?php if($lang===1) echo " selected"?>>简体中文</option>
+                        <option value="en"<?php if($lang===2) echo " selected"?>>English</option>
                     </select>
                 </div>
                 <div class="col" style="text-align: right;">
@@ -117,42 +114,6 @@
                 </div>
                 <div class="col">
                     <span class="comment"><?php text('刪除帳號會永久刪除所有文章以及回覆，操作不可回復', '删除帐号会永久删除所有帳號資料、文章、留言、回覆、...等，操作不可回复')?></span>
-                </div>
-            </div>
-        </div>
-        <div class="tab" data-tab="add-new-user">
-            <div class="setting-area" id="add-new-user">
-                <div class="setting-area-title"><?php text('註冊新用戶', '注册新用户');?></div>
-                <div class="col">
-                    <input class="normal required" id="add-user-id" type="text" placeholder="<?php text('帳號', '帐号')?>" onkeydown="key_enter(this, add_new_user)">
-                    <span class="comment"><?php text('帳號確定後無法更改', '帐号确定后无法更改')?></span>
-                </div>
-                <div class="col">
-                    <input class="normal required" id="add-user-pwd" type="text" placeholder="<?php text('密碼','密码')?>" onkeydown="key_enter(this, add_new_user)">
-                </div>
-                <div class="col">
-                    <input class="normal required" id="add-user-name" type="text" placeholder="<?php text('暱稱', '暱称')?>" onkeydown="key_enter(this, add_new_user)">
-                </div>
-                <div class="col">
-                    <input class="normal required" id="email" type="text" placeholder="Email" onkeydown="key_enter(this, add_new_user)">
-                </div>
-                <div class="col">
-                    <span><?php text('預設語言', '默认语言')?></span>
-                    <select class="normal" id="select-preset-language">
-                        <option value="0"><?php text('繁體中文', '繁体中文')?></option>
-                        <option value="1"><?php text('簡體中文', '简体中文')?></option>
-                    </select>
-                </div>
-                <div class="col">
-                    <span><?php text('選擇角色', '选择角色')?></span>
-                    <select class="normal" id="permission">
-                        <option value="0"><?php text('一般會員', '一般会员')?></option>
-                        <option value="1"><?php text('管理員', '管理员')?></option>
-                    </select>
-                    <span class="comment"><?php text('若要指定為板主，請至看板管理頁面進行指定', '若要指定为板主，请至看板管理页面进行指定')?></span>
-                </div>
-                <div class="col">
-                    <button class="blue center" onclick="add_new_user()"><?php text('新增', '添加')?></button>
                 </div>
             </div>
         </div>
@@ -281,7 +242,6 @@ function change_language(){
     $.post('/function/user-setting?type=change_language', {
         'lang' : $("#change-language #select-language").val()
     }, function(data){
-        console.log(data);
         if(data['Err']){
             console.log(data['Err']);
             notice(data['Err']);
@@ -348,52 +308,6 @@ function switch_diving_mode(o){
         }
     }, 'json');
 }
-
-/*function add_new_user(){
-    var id = $("#add-new-user #add-user-id").val();
-    var pwd = $("#add-new-user #add-user-pwd").val();
-    var name = $("#add-new-user #add-user-name").val();
-    var email = $("#add-new-user #email").val();
-
-    for(var i = 0, err = false; i<$("#add-new-user .required").length; i++){
-        if($("#add-new-user .required").eq(i).val() === ''){
-            err = true;
-            $("#add-new-user .required").eq(i).addClass('err');
-        }else{
-            $("#add-new-user .required").removeClass('err');
-        }
-    }
-    if(err) return;
-
-    $.post('/function/user-setting?type=add_new_user', {
-        'id': id,
-        'pwd': pwd,
-        'name': name,
-        'email': email,
-        'lang': $("#add-new-user #select-preset-language").val(),
-        'permission': $("#add-new-user #permission").val()
-    }, function(data){
-        if(data['Err']){
-            if(data['Err'] === 'only[a-zA-Z0-9-_]{8,30}'){
-                msg = '<?php text('密碼只能由「字母、數字、-、_」組成且介於8~30字', '密码只能由「字母、数字、-、_」组成且介于8~30字')?>';
-            }else if(data['Err'] === 'need-0-9'){
-                msg = '<?php text('密碼必需要含有數字', '密码必需要含有数字')?>';
-            }else if(data['Err'] === 'need-a-z'){
-                msg = '<?php text('密碼必需要含有英文', '密码必需要含有英文')?>';
-            }else if(data['Err'] === 'only[a-zA-Z0-9-_{4,30}]'){
-                msg = '<?php text('帳號只能由「字母、數字、-、_」組成且介於4~30字', '帐号只能由「字母、数字、-、_」组成且介于4~30字')?>';
-            }else if(data['Err'] === 'ID existed'){
-                msg = '<?php text('帳號已經存在', '帐号已经存在')?>';
-            }else{
-                notice(data['Err']);
-                return;
-            }
-            notice(msg);
-        }else{
-            notice('<?php text('已成功新增用戶', '已成功添加用户')?>');
-        }
-    }, 'json');
-}*/
 
 function load_manage_board(){
     window.moderator_candidate = {};
