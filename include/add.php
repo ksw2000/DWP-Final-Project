@@ -95,7 +95,7 @@ foreach($classify_list as $v) {
     if($preset['CLASSIFY'] == $v['ID']){
         $select = ' selected';
     }
-    $list .= '<option value="'.$v['ID'].'"'.$select.'>'.$v[text_r('NAME_TW', 'NAME_CN')].'</option>';
+    $list .= '<option value="'.$v['ID'].'"'.$select.'>'.$v[text_r('NAME_TW', 'NAME_CN', 'NAME_EN')].'</option>';
 }
 $list .= '</select>';
 ?>

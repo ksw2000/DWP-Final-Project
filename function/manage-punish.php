@@ -17,12 +17,12 @@
             if($is_manager){
                 echo '<option value="all">全部看板</option>';
                 foreach($classify_list as $v){
-                    echo '<option value="'.$v['ID'].'">'.$v[text_r('NAME_TW', 'NAME_CN')].'</option>';
+                    echo '<option value="'.$v['ID'].'">'.$v[text_r('NAME_TW', 'NAME_CN', 'NAME_EN')].'</option>';
                 }
             }else if($is_moderator){
                 foreach($classify_list as $v){
                     if(in_array($v['ID'], $cid_managed_by_moderator)){
-                        echo '<option value="'.$v['ID'].'">'.$v[text_r('NAME_TW', 'NAME_CN')].'</option>';
+                        echo '<option value="'.$v['ID'].'">'.$v[text_r('NAME_TW', 'NAME_CN', 'NAME_EN')].'</option>';
                     }
                 }
             }

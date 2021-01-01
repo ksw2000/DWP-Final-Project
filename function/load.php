@@ -193,7 +193,7 @@ if($_GET['type'] == 'load-reply'){
     $notice = new Notice;
     $notice_list = $notice->get_notice_list_by_user_to($_SESSION['login_id'], $from, $num);
 
-    $data['Render_result'] = redner_notice_list($notice);
+    $data['Render_result'] = render_notice_list($notice);
     $data['Next_from'] = $notice->get_next();
 
     echo json_encode($data);

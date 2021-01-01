@@ -68,7 +68,7 @@ function redner_user_list($user){
         $manage_board = '';
         if(!empty($manage_board_list)){
             foreach($manage_board_list as $cid){
-                $manage_board .= '<a class="board-list-short-tag" href="/?tab='.$cid.'">'.Classify::transfer_cid_to_cname($cid, text_r('zh-tw', 'zh-cn')).'板主</a>';
+                $manage_board .= '<a class="board-list-short-tag" href="/?tab='.$cid.'">'.Classify::transfer_cid_to_cname($cid, text_r('zh-tw', 'zh-cn', 'en')).'板主</a>';
             }
             $manage_board = "<center>${manage_board}</center>";
         }
@@ -114,7 +114,7 @@ function render_punishment_list($punishList){
             <img src="'.profile_photo_to_url($user_info['PROFILE']).'">
             <div class="punish-list-item-info">
                 <p>'.$user_info['NAME'].' @'.$user_info['ID'].'</p>
-                <p>'.Classify::transfer_cid_to_cname($v['CLASSIFY_ID'], text_r('zh-tw', 'zh-cn')).'</p>
+                <p>'.Classify::transfer_cid_to_cname($v['CLASSIFY_ID'], text_r('zh-tw', 'zh-cn', 'en')).'</p>
                 <p>直到 '.$deadline.'</p>
             </div>
             <i class="material-icons punish-list-item-close" onclick="delete_punish(\''.$v['SERIAL'].'\')">close</i>

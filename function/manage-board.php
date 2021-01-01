@@ -29,10 +29,12 @@
 </div>
 <div class="setting-area" id="setting-board-area" style="display: none;">
     <p><span>看板 ID </span><span id="modify-board-id"></span></p>
-    <p><?php text('修改繁中名稱', '修改繁中名称')?></p>
+    <p><?php text('修改繁中名稱', '修改繁中名称', 'Chinese name(traditional)')?></p>
     <input class="normal required" id="modify-board-name-t" type="text">
-    <p><?php text('修改簡中名稱', '修改简中名称')?></p>
+    <p><?php text('修改簡中名稱', '修改简中名称', 'Chinese name(simplify)')?></p>
     <input class="normal required" id="modify-board-name-s" type="text">
+    <p><?php text('修改英文名稱', '修改英文名称', 'English name')?></p>
+    <input class="normal required" id="modify-board-name-en" type="text">
     <p><?php text('指定板主' , '指定板主')?></p>
     <div style="display: flex; align-items: stretch;">
         <input class="normal" id="input-modify-moderator-list" type="text" placeholder="指定板主(ID)" onkeydown="key_enter_add_moderator(this, '#input-modify-moderator-list', '#ul-modify-moderator-list')">
@@ -107,6 +109,7 @@ function load_modify_board(id, callback){
             $("#modify-board-id").text(id);
             $("#modify-board-name-t").val(data['NAME_TW']);
             $("#modify-board-name-s").val(data['NAME_CN']);
+            $("#modify-board-name-en").val(data['NAME_EN']);
 
             let input_obj = '#input-modify-moderator-list';
             let list_obj = '#ul-modify-moderator-list';
@@ -207,7 +210,8 @@ function modify_board(){
         'board_id' : window.modify_board_id,
         'board_name' : {
             'zh-tw' : $("#modify-board-name-t").val(),
-            'zh-cn' : $("#modify-board-name-s").val()
+            'zh-cn' : $("#modify-board-name-s").val(),
+            'en' : $("#modify-board-name-en").val()
         },
         'moderator_list' : JSON.stringify(window.moderator_candidate['#input-modify-moderator-list'])
     }, function(data){

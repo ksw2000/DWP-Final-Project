@@ -154,7 +154,7 @@ function render_complete_article($article_info, $reader_id){
                 <span><a class="gray" href="/user/'.$article_info['USER']['ID'].'" onclick="goto_user_by_user_id(\''.$article_info['USER']['ID'].'\'); return false;">'.$article_info['USER']['NAME'].'</a>
                 <a class="gray" href="/user/'.$article_info['USER']['ID'].'" onclick="goto_user_by_user_id(\''.$article_info['USER']['ID'].'\'); return false;">@'.$article_info['USER']['ID'].'</a> ·
                 <a class="gray" href="javascript: void(0);" title="'.render_complete_time($article_info['PUBLISH']).'">'.render_time($article_info['PUBLISH']).'</a></span><br>
-                <span><a class="gray" href="/?tab='.$article_info['CLASSIFY'].'" onclick="goto_index_by_tab(\''.$article_info['CLASSIFY'].'\'); return false;">'.Classify::transfer_cid_to_cname($article_info['CLASSIFY'], text_r('zh-tw', 'zh-cn')).'</a></span><br>
+                <span><a class="gray" href="/?tab='.$article_info['CLASSIFY'].'" onclick="goto_index_by_tab(\''.$article_info['CLASSIFY'].'\'); return false;">'.Classify::transfer_cid_to_cname($article_info['CLASSIFY'], text_r('zh-tw', 'zh-cn', 'en')).'</a></span><br>
             </div>
             <div id="real-delete-article-button" class="confirm-delete-area" onclick="real_delete_this_article(\''.$article_info['SERIAL'].'\')"><i class="material-icons">delete</i></div>';
 
@@ -257,7 +257,7 @@ function render_article_list($article, $reader_id, $flags = 0){
                             <a title="'.render_complete_time($row['PUBLISH']).'" href="javascript:void(0);">'.render_time($row['PUBLISH']).'</a>
                         </span>';
         $ret .= (($flags & RENDER_LIST_MODE) != RENDER_LIST_MODE)? '</div><div>' : '';
-        $ret .= '<span><a href="/?tab='.$row['CLASSIFY'].'" onclick="goto_index_by_tab(\''.$row['CLASSIFY'].'\'); return false;">'.Classify::transfer_cid_to_cname($row['CLASSIFY'], text_r('zh-tw', 'zh-cn')).'</a>';
+        $ret .= '<span><a href="/?tab='.$row['CLASSIFY'].'" onclick="goto_index_by_tab(\''.$row['CLASSIFY'].'\'); return false;">'.Classify::transfer_cid_to_cname($row['CLASSIFY'], text_r('zh-tw', 'zh-cn', 'en')).'</a>';
         if($row['TOP'] == 1 && (($flags & RENDER_CLASSIFY_TOP_BUTTON) == RENDER_CLASSIFY_TOP_BUTTON)){
             $ret .= ' | '.text_r('已置頂', '已置顶');
         }
