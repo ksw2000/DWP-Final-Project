@@ -2,12 +2,9 @@
 class File{
     const SERVER_DIR = './assets/private/';
     const CLIENT_DIR = '/assets/private/';
-    private $_mysqli;
-    private static $_file_list = array();
+    const ALLOW_DIR = ['img', 'music', 'normal', 'profile', 'video'];
 
-    public static function conn(){
-        return (new Conn_main_db())->get_mysqli();
-    }
+    private static $_file_list = array();
 
     private static function _get_extname($path){
         return pathinfo($path)['extension'];
@@ -22,6 +19,21 @@ class File{
         return SELF::upload_files($files, $type, $user_id, $preset_filename, $ext_name);
     }
 
+    public static function server_name_repeat($server_name){
+        $ret = FALSE;
+        foreach(SELF::ALLOW_DIR as $dir){
+            $ret = $ret or file_exists(SELF::SERVER_DIR.$dir.'/'.$server_name);
+        }
+
+        if($ret) return TRUE;
+
+        $db = new DB;
+        $res = $db->query('SELECT COUNT(SERVER_NAME) as num
+                           FROM file WHERE SERVER_NAME = ?', $server_name);
+        if($res->fetch_assoc()['num'] > 0) return TRUE;
+        return FALSE;
+    }
+
     // return array
     public static function upload_files($files, $type, $user_id='', $preset_filename=null, $preset_ext_name=null){
         $len = count($files['name']);
@@ -30,7 +42,7 @@ class File{
             if($preset_filename == null){
                 do{
                     $new_name = random(8, 'ALL'); // 2.8e14 280兆
-                }while(file_exists(SELF::SERVER_DIR.$type.'/'.$new_name.'.'.$ext_name));
+                }while(SELF::server_name_repeat($new_name.'.'.$ext_name));
             }else{
                 $new_name = $preset_filename;
             }
@@ -52,57 +64,45 @@ class File{
             // 1. 用來反向查尋 article 用的 以 article/ 開頭 於文章發佈時更新(這裡不需預設)
             // 2. 用來反向查尋 profile 用的 以 profile/ 為標記
 
-            $mysqli      = SELF::conn();
-            $server_name = $mysqli->real_escape_string($server_name);
-            $user_id     = $mysqli->real_escape_string($user_id);
-            $values      = 'VALUES ("'.$server_name.'", "'.$type.'", "'.$user_id.'", "")';
-            $sql         = 'INSERT INTO `file`(`SERVER_NAME`, `FILE_TYPE`, `OWNER`, `LINK`) '.$values;
-            $mysqli->query($sql);
+            $db = new DB;
+            $db->query('INSERT INTO `file`(`SERVER_NAME`, `FILE_TYPE`, `OWNER`)
+                        VALUES (?, ?, ?)', $server_name, $type, $user_id);
         }
         return SELF::$_file_list;
     }
 
-    public static function delete_by_name_and_type($server_name, $file_type){
+    public static function delete($server_name){
+        $db = new DB;
+        $res = $db->query('SELECT FILE_TYPE FROM file
+                           WHERE SERVER_NAME = ?', $server_name);
+        $file_type = $res->fetch_assoc()['FILE_TYPE'];
         unlink(SELF::SERVER_DIR.$file_type.'/'.$server_name);
-        $mysqli      = SELF::conn();
-        $server_name = $mysqli->real_escape_string($server_name);
-        $file_type   = $mysqli->real_escape_string($file_type);
-        $delete      = 'DELETE FROM `file` WHERE `SERVER_NAME` = "'.$server_name.'" and `FILE_TYPE` = "'.$file_type.'"';
-        if(!$mysqli->query($delete)) return FALSE;
-        return TRUE;
+        $res = $db->query('DELETE FROM file WHERE SERVER_NAME = ?', $server_name);
+        return (bool)$res;
     }
 
-    private static function _delete_by_sql_query($query){
-        $mysqli = SELF::conn();
-        $result = $mysqli->query($query);
-        if($result->num_rows > 0){
-            while($row = $result->fetch_assoc()){
-                SELF::delete_by_name_and_type($row['SERVER_NAME'], $row['FILE_TYPE']);
-            }
-        }
-    }
+    public static function delete_cache(){
 
-    public static function delete_empty_link_but_belong_to($user_id){
-        $mysqli  = SELF::conn();
-        $user_id = $mysqli->real_escape_string($user_id);
-        $query   = 'SELECT `SERVER_NAME`, `FILE_TYPE` FROM `file` WHERE `LINK` = "" and `OWNER` = "'.$user_id.'"';
-        SELF::_delete_by_sql_query($query);
     }
 
     public static function delete_profile_belong_to($user_id){
-        $mysqli  = SELF::conn();
-        $user_id = $mysqli->real_escape_string($user_id);
-        $query = 'SELECT `SERVER_NAME`, `FILE_TYPE` FROM `file` WHERE `LINK` = "profile/" and `OWNER` = "'.$user_id.'"';
-        SELF::_delete_by_sql_query($query);
+        $db = new DB;
+        $res = $db->query('SELECT SERVER_NAME from file WHERE LINK="profile/"
+                           and OWNER = ?', $user_id);
+        $row = $res->fetch_assoc();
+        return SELF::delete($row['SERVER_NAME']);
     }
 
     // delete the file which connects to some specify article id
     public static function delete_file_by_article_serial($article_serial){
-        $mysqli = SELF::conn();
-        $link   = 'article/'.$article_serial;
-        $link   = $mysqli->real_escape_string($link);
-        $sql    = 'SELECT `SERVER_NAME`, `FILE_TYPE` FROM `file` WHERE `LINK` = "'.$link.'"';
-        SELF::_delete_by_sql_query($sql);
+        $db = new DB;
+        $res = $db->query('SELECT `SERVER_NAME` FROM `file` WHERE `LINK` = ?',
+                           'article/'.$article_serial);
+        $success = TRUE;
+        while($row = $res->fetch_assoc()){
+            $success = $success and SELF::delete($row['SERVER_NAME']);
+        }
+        return $success;
     }
 }
 
@@ -110,11 +110,6 @@ class FileList{
     private $_mysqli;
     private $_next;
     private $_file_list = array();
-
-    public function __construct(){
-        $db = new Conn_main_db();
-        $this->_mysqli = $db->get_mysqli();
-    }
 
     public function has_next(){
         return $this->_next != -1;

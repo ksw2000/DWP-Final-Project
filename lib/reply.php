@@ -75,7 +75,7 @@ class Reply{
         while($row = $res->fetch_assoc()){
             $res2 = $db->query("DELETE FROM reply_interactive
                                WHERE SERIAL = ?", $row['SERIAL']);
-            $success = $success & $res2;
+            $success = $success and $res2;
         }
 
         if(!$success) return FALSE;

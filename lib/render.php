@@ -6,24 +6,24 @@ function render_complete_time($timestamp){
 function render_time($timestamp){
     // 小於一分鐘
     if(time()-$timestamp < 60){
-        return text_r('剛剛', '刚刚');
+        return text_r('剛剛', '刚刚', 'Just now');
     }
 
     // 小於一小時內
     if(time()-$timestamp < 60*60){
-        return ceil((time()-$timestamp)/60) .text_r('分鐘前', '分钟前');
+        return ceil((time()-$timestamp)/60) .text_r('分鐘前', '分钟前', 'minutes ago');
     }
 
     // 小於一天
     if(time()-$timestamp < 24*60*60){
-        return ceil((time()-$timestamp)/60/60) .text_r('小時前', '小时前');
+        return ceil((time()-$timestamp)/60/60) .text_r('小時前', '小时前', 'hours ago');
     }
 
     // 同一年
     if(date("Y", time()) == date("Y", $timestamp)){
-        return date("n月j日", $timestamp);
+        return date("n-j", $timestamp);
     }
-    return date("Y年n月j日", $timestamp);
+    return date("Y-n-j", $timestamp);
 }
 
 function profile_photo_to_url($row_user_profile){
@@ -34,9 +34,9 @@ function profile_photo_to_url($row_user_profile){
 function permission_to_role($role){
     switch ($role) {
         case '0':
-            return text_r('一般會員', '一般会员');
+            return text_r('一般會員', '一般会员', 'Normal member');
         case '1':
-            return text_r('管理員', '管理员');
+            return text_r('管理員', '管理员', 'Manager');
         default:
             return '';
     }
@@ -63,19 +63,19 @@ function render_reply($reply_list_item, $reader_info, $classify_id = null){
                     <i class="material-icons expand_more_icon">expand_more</i>
                     <ul class="more-tool-list">';
     if($reader_info['ID'] == $row['USER']['ID']){
-        $ret .= '<li><a href="javascript:void(0);" onclick="open_edit_reply_box(\''.$row['SERIAL'].'\')"><i class="material-icons">edit</i>'.text_r('編輯留言', '编辑留言').'</a></li>';
-        $ret .= '<li><a href="javascript:void(0);" onclick="delete_reply(\''.$row['SERIAL'].'\')"><i class="material-icons">delete</i>'.text_r('刪除留言', '删除留言').'</a></li>';
-        $ret .= '<li><a href="javascript:void(0);" onclick="reply_to_which_floor(\''.$row['FLOOR'].'\')"><i class="material-icons">reply</i>'.text_r('回覆', '回复').'</a></li>';
+        $ret .= '<li><a href="javascript:void(0);" onclick="open_edit_reply_box(\''.$row['SERIAL'].'\')"><i class="material-icons">edit</i>'.text_r('編輯留言', '编辑留言', 'Edit').'</a></li>';
+        $ret .= '<li><a href="javascript:void(0);" onclick="delete_reply(\''.$row['SERIAL'].'\')"><i class="material-icons">delete</i>'.text_r('刪除留言', '删除留言', 'Delete').'</a></li>';
+        $ret .= '<li><a href="javascript:void(0);" onclick="reply_to_which_floor(\''.$row['FLOOR'].'\')"><i class="material-icons">reply</i>'.text_r('回覆', '回复', 'Reply').'</a></li>';
     }else if($reader_info['PERMISSION'] == 1 || $is_moderator){
-        $ret .= '<li><a href="javascript:void(0);" onclick="delete_reply(\''.$row['SERIAL'].'\')"><i class="material-icons">delete</i>'.text_r('權限刪除', '权限删除').'</a></li>';
-        $ret .= '<li><a href="javascript:void(0);" onclick="reply_to_which_floor(\''.$row['FLOOR'].'\')"><i class="material-icons">reply</i>'.text_r('回覆', '回复').'</a></li>';
+        $ret .= '<li><a href="javascript:void(0);" onclick="delete_reply(\''.$row['SERIAL'].'\')"><i class="material-icons">delete</i>'.text_r('權限刪除', '权限删除', 'Delete').'</a></li>';
+        $ret .= '<li><a href="javascript:void(0);" onclick="reply_to_which_floor(\''.$row['FLOOR'].'\')"><i class="material-icons">reply</i>'.text_r('回覆', '回复', 'Reply').'</a></li>';
     }else{
-        $ret .= '<li><a href="javascript:void(0);" onclick="reply_to_which_floor(\''.$row['FLOOR'].'\')"><i class="material-icons">reply</i>'.text_r('回覆', '回复').'</a></li>';
+        $ret .= '<li><a href="javascript:void(0);" onclick="reply_to_which_floor(\''.$row['FLOOR'].'\')"><i class="material-icons">reply</i>'.text_r('回覆', '回复' ,'Reply').'</a></li>';
     }
 
     $ret .= '       </ul>
                 </div>
-                <a href="javascript:void(0);" title="'.text_r('回覆', '回复').' B'.$row['FLOOR'].'" onclick="reply_to_which_floor(\''.$row['FLOOR'].'\')">B'.$row['FLOOR'].'</a> ·
+                <a href="javascript:void(0);" title="'.text_r('回覆', '回复', 'Reply').' B'.$row['FLOOR'].'" onclick="reply_to_which_floor(\''.$row['FLOOR'].'\')">B'.$row['FLOOR'].'</a> ·
                 <a href="/user/'.$row['USER']['ID'].'">'.$row['USER']['NAME'].'</a> ·
                 <a href="javascript:void(0);" title="'.render_complete_time($row['TIME']).'" class="gray">'.render_time($row['TIME']).'</a>
                 <br>
@@ -117,7 +117,7 @@ function render_reply_list($reply, $reader_info, $classify_id = null){
 
     if($has_next_reply){
         $ret.= '<center>';
-        $ret.= '<button onclick="continue_load_reply()" class="blue continue-load-reply-button">'.text_r('載入', '加载').'更多...</button>';
+        $ret.= '<button onclick="continue_load_reply()" class="blue continue-load-reply-button">'.text_r('載入更多...', '加载更多...', 'loading...').'</button>';
         $ret.= '</center>';
     }
     return $ret;
@@ -166,13 +166,13 @@ function render_complete_article($article_info, $reader_id){
             // 為本人時可以編輯刪除
             if($article_info['USER']['ID'] == $reader_info['ID']){
                 $ret['Render_result'] .= '
-                    <li><a href="/edit/'.$article_info['SERIAL'].'"><i class="material-icons">edit</i>'.text_r('編輯文章', '编辑文章').'</a></li>';
+                    <li><a href="/edit/'.$article_info['SERIAL'].'"><i class="material-icons">edit</i>'.text_r('編輯文章', '编辑文章', 'Edit').'</a></li>';
                 $ret['Render_result'] .= '
-                    <li><a href="javascript:void(0);" onclick="delete_this_article()"><i class="material-icons">delete</i>'.text_r('刪除文章', '删除文章').'</a></li>';
+                    <li><a href="javascript:void(0);" onclick="delete_this_article()"><i class="material-icons">delete</i>'.text_r('刪除文章', '删除文章', 'Delete').'</a></li>';
             // 為管理員時可以使用權限刪除
             }else if($reader_info['PERMISSION'] == 1 || $is_moderator){
                 $ret['Render_result'] .= '
-                    <li><a href="javascript:void(0);" onclick="delete_this_article()"><i class="material-icons">delete</i>'.text_r('權限刪除', '权限删除').'</a></li>';
+                    <li><a href="javascript:void(0);" onclick="delete_this_article()"><i class="material-icons">delete</i>'.text_r('權限刪除', '权限删除', 'Delete').'</a></li>';
             }
             $ret['Render_result'] .= '
                     </ul>
@@ -234,11 +234,11 @@ function render_article_list($article, $reader_id, $flags = 0){
 
     if(empty($article_info_list) && (($flags & RENDER_FISRT_LIST) == RENDER_FISRT_LIST)){
         if(($flags & RENDER_QUERY_MODE) == RENDER_QUERY_MODE){
-            $ret .= '<div class="tip-no-article">Oops! '.text_r('查無相關文章', '查无相关文章').'</div>';
+            $ret .= '<div class="tip-no-article">Oops! '.text_r('查無相關文章', '查无相关文章', 'Can not find articles about this').'</div>';
         }else if(($flags & RENDER_STAR_MODE) == RENDER_STAR_MODE){
-            $ret .= '<div class="tip-no-article">Oops! '.text_r('尚無收藏的文章', '尚无收藏的文章').'</div>';
+            $ret .= '<div class="tip-no-article">Oops! '.text_r('尚無收藏的文章', '尚无收藏的文章', 'No starred articles').'</div>';
         }else{
-            $ret .= '<div class="tip-no-article">Oops! '.text_r('空空如也，尚無文章', '空空如也，尚无文章').'</div>';
+            $ret .= '<div class="tip-no-article">Oops! '.text_r('空空如也，尚無文章', '空空如也，尚无文章', 'No articles').'</div>';
         }
     }
 
@@ -259,7 +259,7 @@ function render_article_list($article, $reader_id, $flags = 0){
         $ret .= (($flags & RENDER_LIST_MODE) != RENDER_LIST_MODE)? '</div><div>' : '';
         $ret .= '<span><a href="/?tab='.$row['CLASSIFY'].'" onclick="goto_index_by_tab(\''.$row['CLASSIFY'].'\'); return false;">'.Classify::transfer_cid_to_cname($row['CLASSIFY'], text_r('zh-tw', 'zh-cn', 'en')).'</a>';
         if($row['TOP'] == 1 && (($flags & RENDER_CLASSIFY_TOP_BUTTON) == RENDER_CLASSIFY_TOP_BUTTON)){
-            $ret .= ' | '.text_r('已置頂', '已置顶');
+            $ret .= ' | '.text_r('已置頂', '已置顶', 'Top');
         }
         $ret .= '</span></div>';
 
@@ -276,22 +276,22 @@ function render_article_list($article, $reader_id, $flags = 0){
             if((($flags & RENDER_CLASSIFY_TOP_BUTTON) == RENDER_CLASSIFY_TOP_BUTTON)
                 && ($reader_info['PERMISSION'] == 1 || $is_moderator)){
                 if($row['TOP'] == 1){
-                    $ret .= '<li><a href="javascript:void(0);" onclick="set_top(\''.$row['SERIAL'].'\', true)"><i class="material-icons">star</i>'.text_r('取消置頂', '取消置顶').'</a></li>';
+                    $ret .= '<li><a href="javascript:void(0);" onclick="set_top(\''.$row['SERIAL'].'\', true)"><i class="material-icons">star</i>'.text_r('取消置頂', '取消置顶', 'Upin from top').'</a></li>';
                 }else{
-                    $ret .= '<li><a href="javascript:void(0);" onclick="set_top(\''.$row['SERIAL'].'\', false)"><i class="material-icons">star</i>'.text_r('置頂', '置顶').'</a></li>';
+                    $ret .= '<li><a href="javascript:void(0);" onclick="set_top(\''.$row['SERIAL'].'\', false)"><i class="material-icons">star</i>'.text_r('置頂', '置顶', 'Pin to top').'</a></li>';
                 }
             }
             // 可取消收藏
             if(($flags & RENDER_STAR_MODE) == RENDER_STAR_MODE){
-                $ret .= '<li><a href="javascript:void(0);" onclick="cancel_star(\''.$row['SERIAL'].'\')"><i class="material-icons">bookmark_border</i>'.text_r('取消收藏', '取消收藏').'</a></li>';
+                $ret .= '<li><a href="javascript:void(0);" onclick="cancel_star(\''.$row['SERIAL'].'\')"><i class="material-icons">bookmark_border</i>'.text_r('取消收藏', '取消收藏', 'Unstar').'</a></li>';
             }
             // 為本人時可以編輯刪除
             if($row['USER']['ID'] == $reader_info['ID']){
-                $ret .= '<li><a href="/edit/'.$row['SERIAL'].'"><i class="material-icons">edit</i>'.text_r('編輯文章', '编辑文章').'</a></li>';
-                $ret .= '<li><a href="javascript:void(0);" onclick="delete_article(\''.$row['SERIAL'].'\')"><i class="material-icons">delete</i>'.text_r('刪除文章', '删除文章').'</a></li>';
+                $ret .= '<li><a href="/edit/'.$row['SERIAL'].'"><i class="material-icons">edit</i>'.text_r('編輯文章', '编辑文章', 'Edit').'</a></li>';
+                $ret .= '<li><a href="javascript:void(0);" onclick="delete_article(\''.$row['SERIAL'].'\')"><i class="material-icons">delete</i>'.text_r('刪除文章', '删除文章', 'Delete').'</a></li>';
             // 為管理員時可以使用權限刪除
             }else if($reader_info['PERMISSION'] == 1 || $is_moderator){
-                $ret .= '<li><a href="javascript:void(0);" onclick="delete_article(\''.$row['SERIAL'].'\')"><i class="material-icons">delete</i>'.text_r('權限刪除', '权限删除').'</a></li>';
+                $ret .= '<li><a href="javascript:void(0);" onclick="delete_article(\''.$row['SERIAL'].'\')"><i class="material-icons">delete</i>'.text_r('權限刪除', '权限删除', 'Delete').'</a></li>';
             }
             $ret .= '</ul></div>';
         }
@@ -378,25 +378,25 @@ function render_bio_edit_area($user_info){ //edit the user info
     return '
     <div id="bio-edit">
         <div class="col">
-            <i class="material-icons">person</i><input class="normal" type="text" placeholder="名字" value="'.$user_info['NAME'].'" id="name">
+            <i class="material-icons">person</i><input class="normal" type="text" placeholder="'.text_r('名字', '名字', 'Name').'" value="'.$user_info['NAME'].'" id="name">
         </div>
         <div class="col">
-            <i class="material-icons">cake</i><input class="normal" type="text" placeholder="生日是..." value="'.$birthday.'" id="birthday">
+            <i class="material-icons">cake</i><input class="normal" type="text" placeholder="'.text_r('生日是', '生日是', 'Being born at').'..." value="'.$birthday.'" id="birthday">
         </div>
         <div class="col">
-            <i class="material-icons">sentiment_satisfied</i><input class="normal" type="text" placeholder="'.text_r('興趣是', '兴趣是').'..." value="'.$hobby.'" id="hobby">
+            <i class="material-icons">sentiment_satisfied</i><input class="normal" type="text" placeholder="'.text_r('興趣是', '兴趣是', 'Hobby').'..." value="'.$hobby.'" id="hobby">
         </div>
         <div class="col">
-            <i class="material-icons">place</i><input class="normal" type="text" placeholder="'.text_r('來自', '来自').'..." value="'.$from.'" id="from">
+            <i class="material-icons">place</i><input class="normal" type="text" placeholder="'.text_r('來自', '来自', 'Come from').'..." value="'.$from.'" id="from">
         </div>
         <div class="col">
-            <i class="material-icons">link</i><input class="normal" type="text" placeholder="'.text_r('連結', '链結').'" value="'.$link.'" id="link">
+            <i class="material-icons">link</i><input class="normal" type="text" placeholder="'.text_r('連結', '链結', 'Link').'" value="'.$link.'" id="link">
         </div>
         <div class="col">
             <div id="bio-content-editor">'.$bio.'</div>
         </div>
         <div class="col">
-            <button onclick="edit_bio()" class="blue center">'.text_r('儲存變更', '保存变更').'</button>
+            <button onclick="edit_bio()" class="blue center">'.text_r('儲存變更', '保存变更', 'Save').'</button>
         </div>
     </div>
     ';
@@ -453,6 +453,7 @@ function render_bio($user_info, $include_edit_area = FALSE){
     }
 
     $ret .= '<div id="bio-list"><ul>';
+    $ret .= '<li><i class="material-icons">message</i><a href="http://localhost/chat/'.$user_info['ID'].'">'.text_r('傳訊息', '传讯息','DM').'</a></li>';
     $ret .= '<li><i class="material-icons">adjust</i>'.$online.'</li>';
     $ret .= ($birthday != '')? '<li><i class="material-icons">cake</i>'.$birthday.'</li>' : '';
     $ret .= ($hobby != '')? '<li><i class="material-icons">sentiment_satisfied</i>'.$hobby.'</li>' : '';
@@ -462,7 +463,7 @@ function render_bio($user_info, $include_edit_area = FALSE){
     $ret .='<div id="bio-content">'.$bio.'</div>';
     if($birthday == '' && $hobby == '' && $from == '' && $link == '' && $bio ==''){
         if($include_edit_area){
-            $ret .= '<center class="comment">'.text_r('尚未完成自我介紹', '尚未完成自我介绍').'<br>'.text_r('點擊右上方的筆', '点击右上方的笔').'<i class="material-icons" style="font-size:1em;">edit</i>'.text_r('進行編輯', '进行编辑').'</center>';
+            $ret .= '<center class="comment">'.text_r('尚未完成自我介紹', '尚未完成自我介绍', 'Self-introduction is not edited').'<br>'.text_r('點擊右上方的筆', '点击右上方的笔', 'Press right bottom pencil').'<i class="material-icons" style="font-size:1em;">edit</i>'.text_r('進行編輯', '进行编辑', 'to edit').'</center>';
         }
     }
     $ret .='</div>';
@@ -547,7 +548,7 @@ function render_attachment_list($attachment_list, $editable = FALSE, $snapshot_m
                 $ret .= '<a href="javascript:void(0);" class="del-list-item" onclick="delete_attachment(\''.$v['server_name'].'\')"><i class="material-icons">close</i></a>';
             }
             $ret .='</p>';
-            $ret .= '<audio controls controlsList="nodownload"><source src="'.$v['path'].'">'.text_r('您的瀏覽器不支援 HTML5 播放器', '您的浏览器不支持 HTML5 播放器').'</audio>';
+            $ret .= '<audio controls controlsList="nodownload"><source src="'.$v['path'].'">'.text_r('您的瀏覽器不支援 HTML5 播放器', '您的浏览器不支持 HTML5 播放器', 'Your bowser do not support HTML5 player').'</audio>';
             $ret .= '</div>';
         }
         $ret.= '</div>';
@@ -563,7 +564,7 @@ function render_attachment_list($attachment_list, $editable = FALSE, $snapshot_m
                 $ret .= '<a href="javascript:void(0);" class="del-list-item" onclick="delete_attachment(\''.$v['server_name'].'\')"><i class="material-icons">close</i></a>';
             }
             $ret .='</p>';
-            $ret .= '<video controls controlsList="nodownload"><source src="'.$v['path'].'">'.text_r('您的瀏覽器不支援 HTML5 播放器', '您的浏览器不支持 HTML5 播放器').'</audio>';
+            $ret .= '<video controls controlsList="nodownload"><source src="'.$v['path'].'">'.text_r('您的瀏覽器不支援 HTML5 播放器', '您的浏览器不支持 HTML5 播放器', 'Your bowser do not support HTML5 player').'</audio>';
             $ret .= '</div>';
         }
         $ret.= '</div>';
@@ -573,7 +574,7 @@ function render_attachment_list($attachment_list, $editable = FALSE, $snapshot_m
     if(!empty($normal_list)){
         $ret.= '<div class="normal-list">';
         if(!$snapshot_mode){
-            $ret.= '<p>'.text_r('檔案附件', '文件附件').'：</p>';
+            $ret.= '<p>'.text_r('檔案附件：', '文件附件：', 'Files:').'</p>';
         }
         $ret.= '<ul>';
         foreach($normal_list as $v){
@@ -618,7 +619,7 @@ function render_notice_list($notice, $flags = 0){
     $ret  = '';
 
     if(empty($list) && (($flags & RENDER_FISRT_LIST) == RENDER_FISRT_LIST)){
-        $ret .= '<div class="tip-no-article">'.text_r('尚無通知', '尚无通知').'</div>';
+        $ret .= '<div class="tip-no-article">'.text_r('尚無通知', '尚无通知', 'No new notice').'</div>';
     }
 
     foreach($list as $index => $row){
@@ -632,13 +633,13 @@ function render_notice_list($notice, $flags = 0){
                     <div><span><a href="javascript:void(0);">'.$row['ID_FROM']['NAME'].'</a> @'.$row['ID_FROM']['ID'].' · <a title="'.render_complete_time($row['TIME']).'" href="javascript:void(0);">'.render_time($row['TIME']).'</a></span><span>';
         switch($row['TYPE']){
             case Notice::COMMENT_TO_YOUR_ARTICLE:
-                $ret .= '新的留言';
+                $ret .= text_r('新的留言', '新的留言', 'New comment');
                 break;
             case Notice::NEW_LIKE:
-                $ret .= text_r('新的按讚', '新的按赞');
+                $ret .= text_r('新的按讚', '新的按赞', 'New like');
                 break;
             case Notice::REPLY_TO_YOUR_COMMENT:
-                $ret .= text_r('有人回覆你', '有人回复你');
+                $ret .= text_r('有人回覆你', '有人回复你', 'New reply');
                 break;
             case Notice::YOUR_ARTICLE_IS_DELETED:
                 break;
@@ -658,12 +659,12 @@ function render_notice_list($notice, $flags = 0){
                 $article_serial = $matches[1];
                 $article_info = Article::get_info_by_serial($article_serial);
 
-                $ret .= text_r('你的貼文', '你的贴文').' "'.$article_info['TITLE'].'" 有新的留言';
+                $ret .= text_r('你的貼文', '你的贴文', 'Your post').' "'.$article_info['TITLE'].'" '.text_r(' 有新的留言', ' 有新的留言', 'has new comment');
                 break;
             case Notice::NEW_LIKE:
                 $article_serial = str_replace('article/', '', $row['LINK']);
                 $article_info = Article::get_info_by_serial($article_serial);
-                $ret .= '"'.$article_info['TITLE'].'" '.text_r('有新的按讚', '有新的按赞');
+                $ret .= '"'.$article_info['TITLE'].'" '.text_r('有新的按讚', '有新的按赞', 'New like');
                 break;
             case Notice::REPLY_TO_YOUR_COMMENT:
                 /*
@@ -675,7 +676,7 @@ function render_notice_list($notice, $flags = 0){
                 preg_match('/article\/(.*?)\?reply=([0-9]+)\&reply_to=([0-9]+)/', $row['LINK'], $match);
                 $article_serial = $matches[1];
                 $article_info = Article::get_info_by_serial($article_serial);
-                $ret .= '"'.$row['ID_FROM']['NAME'].'" '.text_r('回覆了你在', '回复了你在').' "'.$article_info['TITLE'].'" 的留言';
+                $ret .= '"'.$row['ID_FROM']['NAME'].'" '.text_r('回覆了你在', '回复了你在', 'replied your comment at').' "'.$article_info['TITLE'].text_r(' 的留言', ' 的留言', '');
                 break;
             case Notice::YOUR_ARTICLE_IS_DELETED:
                 break;
@@ -692,9 +693,8 @@ function render_notice_list($notice, $flags = 0){
     }
 
     if($notice->has_next()){
-        $ret .= '<button onclick="window.inbox.continue_load()" class="blue continue-load-notice-button center">'.text_r('載入', '加载').'更多...</button>';
+        $ret .= '<button onclick="window.inbox.continue_load()" class="blue continue-load-notice-button center">'.text_r('載入更多...', '加载更多...', 'More...').'</button>';
     }
     return $ret;
 }
-
 ?>

@@ -124,8 +124,8 @@ class User{
             $res = $db->query('SELECT ID, NAME, PROFILE, EMAIL, PERMISSION,
             ONLINE, DIVING, READTIME, LANGUAGE, MORE_INFO
             FROM user WHERE ID = ?', $user_id);
-            $row = $res->fetch_assoc();
 
+            $row = $res->fetch_assoc();
             $more_info = json_decode($row['MORE_INFO'], TRUE);
 
             $more_info_preset = array('BIRTHDAY' => '', 'HOBBY' => '', 'FROM' => '', 'LINK' => '', 'BIO' => '');
@@ -297,7 +297,7 @@ class User{
         $res = $db->query('SELECT SERVER_NAME, FILE_TYPE
                            FROM file WHERE OWNER = ?', $user_id);
         foreach($res as $row){
-            File::delete_by_name_and_type($row['SERVER_NAME'], $row['FILE_TYPE']);
+            File::delete($row['SERVER_NAME']);
         }
 
         // DELETE NOTICE

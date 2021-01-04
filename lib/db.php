@@ -1,17 +1,4 @@
 <?php
-class Conn_main_db{
-    private $_mysqli;
-    public function __construct(){
-        $_mysqli = new mysqli('localhost', 'admin', 'Prk8n1iDV2nyXL0z', 'main');
-        $_mysqli->query('SET NAMES UTF8');
-        $this->_mysqli = $_mysqli;
-    }
-
-    public function get_mysqli(){
-        return $this->_mysqli;
-    }
-}
-
 class DB{
     public $conn;
     public $err;

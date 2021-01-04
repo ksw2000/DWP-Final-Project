@@ -131,11 +131,11 @@ class Classify{
             return FALSE;
         }
 
-        $success = TRUE;
-        $success &= $db->query('DELETE FROM classify WHERE ID=? ', $cid);
-        $success &= $db->query('DELETE FROM moderator WHERE CLASSIFY=? ', $cid);
+        $res = $db->query('DELETE FROM classify WHERE ID=? ', $cid);
+        if(!$res) return FALSE;
+        $res = $db->query('DELETE FROM moderator WHERE CLASSIFY=? ', $cid);
 
-        return $success;
+        return $res;
     }
 
     public static function is_moderator($user_id, $cid){
