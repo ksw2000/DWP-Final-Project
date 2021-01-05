@@ -112,6 +112,7 @@ if($url_id == 'user' || $url_id == 'chat'){
     $title = $article_info['TITLE'].'::'.$article_info['USER']['NAME'].'::'.$title;
 }
 
+$cache_random = time() >> 1;
 ?>
 
 <!DOCTYPE html>
@@ -119,30 +120,26 @@ if($url_id == 'user' || $url_id == 'chat'){
 <head>
     <title><?php echo $title;?></title>
     <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.png">
-    <link rel="stylesheet" href="/assets/css/main.css?<?php echo time();?>">
-    <link rel="stylesheet" href="/assets/css/article-list.css?<?php echo time();?>">
-    <link rel="stylesheet" href="/assets/css/bio.css?<?php echo time();?>">
-    <link rel="stylesheet" href="/assets/css/article-container.css?<?php echo time();?>">
+    <link rel="stylesheet" href="/assets/css/main.css?<?php echo $cache_random;?>">
+    <link rel="stylesheet" href="/assets/css/article-list.css?<?php echo $cache_random;?>">
+    <link rel="stylesheet" href="/assets/css/bio.css?<?php echo $cache_random;?>">
+    <link rel="stylesheet" href="/assets/css/article-container.css?<?php echo $cache_random;?>">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="/assets/css/cropper.min.css">
     <?php if($url_id == 'index' || $url_id == 'article' ||
              $url_id == 'user' || $url_id == 'chat'):?>
-    <link rel="stylesheet" href="/assets/css/for-index-content.css?<?php echo time();?>">
+    <link rel="stylesheet" href="/assets/css/for-index-content.css?<?php echo $cache_random;?>">
     <?php elseif($url_id == 'setting'):?>
-    <link rel="stylesheet" href="/assets/css/for-setting.css?<?php echo time();?>">
+    <link rel="stylesheet" href="/assets/css/for-setting.css?<?php echo $cache_random;?>">
     <?php endif;?>
     <link rel="shortcut icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="theme-color" content="#e8e8e8"/>
-    <script src="/assets/js/jquery-3.5.1.js"></script>
-    <?php if($url_id != 'add'):?>
-    <script src="/assets/js/ckeditor5-inline/build/ckeditor.js"></script>
-    <?php endif;?>
     <script type="text/javascript">
     var isIE = navigator.userAgent.search("Trident") > -1;
 
     if(isIE){
-        var r = confirm("<?php text('因為安全性問題我們已不支援 IE 瀏覽器點擊確定已下載 Google Chrome', '因为安全性问题我们已不支援 IE 浏览器点击确定已下载 Google Chrome');?>");
+        var r = confirm("<?php text('因為安全性問題我們已不支援 IE 瀏覽器點擊確定已下載 Google Chrome', '因为安全性问题我们已不支援 IE 浏览器点击确定已下载 Google Chrome','For your best experience, we do not support Internet Explorer. Please press the "Download" to download Google Chrome');?>");
         if(r){
             document.location.href="https://www.google.com/chrome/";
         }
@@ -159,153 +156,13 @@ if($url_id == 'user' || $url_id == 'chat'){
 
         document.location.href="https://www.google.com/chrome/";
     }
-
-
-    function close_expand_more(obj){
-        $(obj).children('ul.more-tool-list').fadeOut();
-    }
-
-    function open_expand_more(obj){
-        $(obj).children('ul.more-tool-list').slideDown();
-    }
-
-    function notice_close(){
-        $("#notice").slideUp(500);
-    }
-
-    function set_top(serial, reset){
-        $.post('/function/setting?type=set_top', {
-            'serial': serial,
-            'reset': reset
-        }, function(data){
-            if(data['Err']){
-                console.log(data['Err']);
-                notice(data['Err']);
-                return;
-            }else{
-                if(typeof window.refresh_function === 'function'){
-                    window.refresh_function();
-                }
-                window.scrollTo({ top : 0, behavior: 'smooth'});
-            }
-        }, 'json');
-    }
-
-    function notice(msg){
-        $("#notice #notice-content").html(msg);
-        $("#notice").slideDown({
-            start: function(){
-                $(this).css({
-                    display: "flex"
-                })
-            },
-            complete: function(){
-                setTimeout(function(){
-                    notice_close();
-                }, 5000);
-            }
-        });
-    }
-
-    function Inbox(){
-        $('.continue-load-notice-button').hide('fast');
-        var self = this;
-        this.next = 0;
-        this.load = function(from){
-            $.get('/function/load', {
-                'type': 'render-inbox',
-                'from': from
-            }, function(data){
-                if(data['Err']){
-                    console.log(data['Err']);
-                }else{
-                    self.next = data['Next_from'];
-                    if(from === 0){
-                        $("#inbox-list").html(data['Render_result']);
-                    }else{
-                        $("#inbox-list").append(data['Render_result']);
-                    }
-                    self.lock_continue_load_notice = false;
-                }
-            }, 'json');
-        }
-
-        this.continue_load = function(){
-            $('.continue-load-notice-button').hide('fast');
-            self.load(self.next);
-        }
-
-        this.update_read_time = function(){
-            $.get('/function/notice?type=update_read_time', {}, function(){
-                $("#new-message").fadeOut();
-            });
-        }
-
-        this.goto_notice = function(serial, url){
-            $.post('/function/notice?type=set_already_read', {
-                'serial': serial
-            },function(data){
-                console.log(data);
-                location.href = '/'+url;
-            });
-        }
-
-        this.check_new_notice = function(){
-            $.get('/function/notice?type=load_inbox_not_read_num', {},
-            function(data){
-                if(data['Num'] > 0){
-                    $("#new-message").fadeIn();
-                }else{
-                    $("#new-message").fadeOut();
-                }
-            }, 'json');
-        }
-
-        this.delete_notice = function(serial){
-            $.post('/function/notice?type=delete', {
-                'serial': serial
-            }, function(data){
-                if(data['Err']){
-                    console.log(data['Err']);
-                }else{
-                    $(".list[data-serial='" + serial + "']").slideUp();
-                }
-            }, 'json');
-        }
-
-        // constructor
-        self.check_new_notice();
-        setInterval(function(){
-            self.check_new_notice();
-        }, 40000);
-        self.load(0);
-    }
-
-    function toggleInbox(){
-        if($('#inbox').css('display') === 'none'){
-            if(typeof window.inbox === 'undefined'){
-                window.inbox = new Inbox();
-            }
-            window.inbox.update_read_time();
-            $("#notifications-icon").text("close");
-        }else{
-            $("#notifications-icon").text("notifications");
-        }
-        $("#inbox").slideToggle();
-    }
-
-    function key_enter(e, call){
-        var keycode;
-        if(window.event){
-            keycode = window.event.keyCode;
-        }else if(e){
-            keycode = e.which;
-        }
-        if(keycode == 13){
-            call();
-        }
-    }
-
+    </script>
+    <script src="/assets/js/jquery-3.5.1.js"></script>
+    <?php if($url_id != 'add'):?>
+    <script src="/assets/js/ckeditor5-inline/build/ckeditor.js"></script>
+    <?php endif;?>
+    <script src="/assets/js/main.js?<?php echo $cache_random;?>"></script>
+    <script>
     window.onload = function(){
         window.inbox = new Inbox();
         setInterval(function(){
@@ -313,7 +170,6 @@ if($url_id == 'user' || $url_id == 'chat'){
         }, 40000);
     }
     </script>
-    <script src="/assets/js/article.js?<?php echo time();?>"></script>
 </head>
 <body>
     <div id="notice">

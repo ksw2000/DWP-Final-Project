@@ -1,3 +1,148 @@
+function close_expand_more(obj){
+    $(obj).children('ul.more-tool-list').fadeOut();
+}
+
+function open_expand_more(obj){
+    $(obj).children('ul.more-tool-list').slideDown();
+}
+
+function notice_close(){
+    $("#notice").slideUp(500);
+}
+
+function set_top(serial, reset){
+    $.post('/function/setting?type=set_top', {
+        'serial': serial,
+        'reset': reset
+    }, function(data){
+        if(data['Err']){
+            console.log(data['Err']);
+            notice(data['Err']);
+            return;
+        }else{
+            if(typeof window.refresh_function === 'function'){
+                window.refresh_function();
+            }
+            window.scrollTo({ top : 0, behavior: 'smooth'});
+        }
+    }, 'json');
+}
+
+function notice(msg){
+    $("#notice #notice-content").html(msg);
+    $("#notice").slideDown({
+        start: function(){
+            $(this).css({
+                display: "flex"
+            })
+        },
+        complete: function(){
+            setTimeout(function(){
+                notice_close();
+            }, 5000);
+        }
+    });
+}
+
+function Inbox(){
+    $('.continue-load-notice-button').hide('fast');
+    var self = this;
+    this.next = 0;
+    this.load = function(from){
+        $.get('/function/load', {
+            'type': 'render-inbox',
+            'from': from
+        }, function(data){
+            if(data['Err']){
+                console.log(data['Err']);
+            }else{
+                self.next = data['Next_from'];
+                if(from === 0){
+                    $("#inbox-list").html(data['Render_result']);
+                }else{
+                    $("#inbox-list").append(data['Render_result']);
+                }
+                self.lock_continue_load_notice = false;
+            }
+        }, 'json');
+    }
+
+    this.continue_load = function(){
+        $('.continue-load-notice-button').hide('fast');
+        self.load(self.next);
+    }
+
+    this.update_read_time = function(){
+        $.get('/function/notice?type=update_read_time', {}, function(){
+            $("#new-message").fadeOut();
+        });
+    }
+
+    this.goto_notice = function(serial, url){
+        $.post('/function/notice?type=set_already_read', {
+            'serial': serial
+        },function(data){
+            console.log(data);
+            location.href = '/'+url;
+        });
+    }
+
+    this.check_new_notice = function(){
+        $.get('/function/notice?type=load_inbox_not_read_num', {},
+        function(data){
+            if(data['Num'] > 0){
+                $("#new-message").fadeIn();
+            }else{
+                $("#new-message").fadeOut();
+            }
+        }, 'json');
+    }
+
+    this.delete_notice = function(serial){
+        $.post('/function/notice?type=delete', {
+            'serial': serial
+        }, function(data){
+            if(data['Err']){
+                console.log(data['Err']);
+            }else{
+                $(".list[data-serial='" + serial + "']").slideUp();
+            }
+        }, 'json');
+    }
+
+    // constructor
+    self.check_new_notice();
+    setInterval(function(){
+        self.check_new_notice();
+    }, 40000);
+    self.load(0);
+}
+
+function toggleInbox(){
+    if($('#inbox').css('display') === 'none'){
+        if(typeof window.inbox === 'undefined'){
+            window.inbox = new Inbox();
+        }
+        window.inbox.update_read_time();
+        $("#notifications-icon").text("close");
+    }else{
+        $("#notifications-icon").text("notifications");
+    }
+    $("#inbox").slideToggle();
+}
+
+function key_enter(e, call){
+    var keycode;
+    if(window.event){
+        keycode = window.event.keyCode;
+    }else if(e){
+        keycode = e.which;
+    }
+    if(keycode == 13){
+        call();
+    }
+}
+
 // like: 0 dislike: 1
 function like_this_article(obj, type, article_serial){
     var yes = $(obj).hasClass('yes');
@@ -8,7 +153,6 @@ function like_this_article(obj, type, article_serial){
         'article_serial': article_serial,
         'type': type
     },function(data){
-        console.log(data);
         if(data['Err']){
             console.log(data['Err']);
             notice(data['Err']);
