@@ -10,6 +10,8 @@ include './lib/vendor.php'; //put in functions
 if($url_id == 'function' && !empty($_GET['type']) && $_GET['type'] == 'add_new_user'){
     include './function/'.$_GET['include'].'.php';
     exit();
+}else if($url_id == "article"){
+    if(empty($_GET['serial']) || !Article::exist($_GET['serial'])) header('Location: /');
 }else if(empty($_SESSION['login_id'])){
     header('Location: /login');
     exit();
@@ -18,7 +20,10 @@ if($url_id == 'function' && !empty($_GET['type']) && $_GET['type'] == 'add_new_u
 User::update_online($_SESSION['login_id']);
 
 // 將 /user/[自己] 轉到 /user
-if($url_id == 'user' && isset($_GET['visted-user']) && $_GET['visted-user'] == $_SESSION['login_id']){
+if($url_id == 'user' && isset($_GET['visted-user']) &&
+   ($_GET['visted-user'] == $_SESSION['login_id'] ||
+    !User::id_existed($_GET['visted-user'])
+   )){
     header('Location: /user');
     exit();
 }
@@ -89,29 +94,13 @@ process_attachment:
     exit();
 }
 
-$title = text_r('龍哥論壇', '龙哥论坛', 'Longer Forum');
 $be_visited_user = $_GET['visted-user'] ?? $_SESSION['login_id'];
+$title = render_title($url_id, $_GET, $be_visited_user);
 
-if($url_id == 'user' || $url_id == 'chat'){
-    $user_info = User::get_user_public_info($be_visited_user, TRUE);
-    $title = $user_info['NAME'].'::'.$title;
-}else if($url_id == 'add'){
-    if(isset($_GET['edit'])){
-        $title = text_r('修改貼文', '修改贴文', 'Edit').'::'.$title;
-    }else{
-        $title = text_r('貼文', '贴文', 'Post').'::'.$title;
-    }
-}else if($url_id == 'setting'){
-    $title = text_r('設定', '设置','Setting').'::'.$title;
-}else if($url_id == 'article'){
-    $serial = $_GET['serial'];
-    if(empty($serial) || !Article::exist($serial)){
-        header('Location: /');
-    }
-    $article_info = Article::get_info_by_serial($serial);
-    $title = $article_info['TITLE'].'::'.$article_info['USER']['NAME'].'::'.$title;
-}
+$user_info    = User::get_user_public_info($be_visited_user, User::MORE_INFO);
+/*
 
+*/
 $cache_random = time() >> 1;
 ?>
 
@@ -139,7 +128,7 @@ $cache_random = time() >> 1;
     var isIE = navigator.userAgent.search("Trident") > -1;
 
     if(isIE){
-        var r = confirm("<?php text('因為安全性問題我們已不支援 IE 瀏覽器點擊確定已下載 Google Chrome', '因为安全性问题我们已不支援 IE 浏览器点击确定已下载 Google Chrome','For your best experience, we do not support Internet Explorer. Please press the "Download" to download Google Chrome');?>");
+        var r = confirm('<?php text('因為安全性問題我們已不支援 IE 瀏覽器點擊確定已下載 Google Chrome', '因为安全性问题我们已不支援 IE 浏览器点击确定已下载 Google Chrome','For your best experience, we do not support Internet Explorer. Please press the "Download" to download Google Chrome');?>');
         if(r){
             document.location.href="https://www.google.com/chrome/";
         }
@@ -182,7 +171,7 @@ $cache_random = time() >> 1;
     </div>
     <nav>
     <?php if($url_id == 'index' || $url_id == 'article' || $url_id == 'user'):?>
-        <div><a href="/user" onclick="goto_user_by_user_id('<?php echo $be_visited_user?>'); return false;"><i class="material-icons" style="vertical-align: middle;">person</i></a></div>
+        <div><a href="/user" onclick="goto_user_by_user_id('<?php echo $_SESSION['login_id']?>'); return false;"><i class="material-icons" style="vertical-align: middle;">person</i></a></div>
         <div><a href="/" onclick="goto_index_by_tab('all'); return false;"><i class="material-icons" style="vertical-align: middle;">home</i></a></div>
     <?php else:?>
         <div><a href="/user"><i class="material-icons" style="vertical-align: middle;">person</i></a></div>

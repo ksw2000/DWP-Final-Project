@@ -22,17 +22,6 @@
             $_SESSION['login_id'] = $id;
             $_SESSION['user_info'] = User::get_user_public_info($id);
             User::update_online($id);
-            /*
-                $_SESSION['user_info']['ID']
-                $_SESSION['user_info']['NAME']
-                $_SESSION['user_info']['PROFILE']
-                $_SESSION['user_info']['EMAIL']
-                $_SESSION['user_info']['PERMISSION']
-                $_SESSION['user_info']['ONLINE']
-                $_SESSION['user_info']['DIVING']
-                $_SESSION['user_info']['LANGUAGE']
-                $_SESSION['user_info']['MORE_INFO']
-            */
         }else{
             $data['Err'] = '帳號密碼輸入錯誤';
             sleep(5);
@@ -159,9 +148,6 @@
 </div>
 <div id="login-parent">
     <div id="login">
-       <!-- <div style="width:100%; max-width: 400px; margin:0px auto;">
-            <img src="/assets/img/logo.svg" style="width: 100%; max-width:auto;">
-        </div> -->
     <?php if($normal):?>
         <h4 style="text-align:center;font-size:50px;">登入</h4>
         <div class="col">
@@ -198,31 +184,35 @@
     <?php elseif($reg):?> <!-- Create a new account -->
         <div id="add-new-user">
             <div class="col">
-                <span style="font-size:50px;margin-left:5%;">建立新帳號</span>
+                <span style="font-size: 50px; margin-left: 5%;">建立新帳號</span>
             </div>
             <div class="col">
                 <label for="add-user-id">帳號</label>
-                <input class="light required" id="add-user-id" autocomplete="off" type="text" placeholder="abc123" id="create_id" autofocus>
+                <input class="light required" id="add-user-id" type="text" placeholder="4 ~ 30" autofocus>
             </div>
             <div class="col">
                 <label for="add-user-pwd">密碼</label>
-                <input class="light required" id="add-user-pwd" autocomplete="off" type="password" placeholder="密碼" id="create_pw" autofocus>
+                <input class="light required" id="add-user-pwd" autocomplete="off" type="password" placeholder="8 ~ 30">
+            </div>
+            <div class="col">
+                <label for="add-user-pwd-2">確認密碼</label>
+                <input class="light required" id="add-user-pwd-2" autocomplete="off" type="password">
             </div>
             <div class="col">
                 <label for="add-user-name">暱稱</label>
-                <input class="light required" id="add-user-name" autocomplete="off" type="text" placeholder="暱稱" id="create_name" autofocus>
+                <input class="light required" id="add-user-name" type="text" placeholder="">
             </div>
             <div class="col">
                 <label for="add-user-email">電子郵件</label>
-                <input class="light required" id="add-user-email" autocomplete="off" type="email" placeholder="Email" id="create_email" autofocus>
+                <input class="light required" id="add-user-email" type="email" placeholder="sakura@example.com">
             </div>
             <div class="col">
                 <label for="select-preset-language">預設語言</label>
                 <div class="col">
                 <select id="select-preset-language" class="browser-default">
-                    <option value="0">繁體中文</option>
-                    <option value="1">簡體中文</option>
-                    <option value="2">English</option>
+                    <option value="zh-tw">繁體中文</option>
+                    <option value="zh-cn">簡體中文</option>
+                    <option value="en">English</option>
                 </select>
                 </div>
             </div>
@@ -475,13 +465,14 @@ function ensure_change_email(){
         });
     }, 'json');
 }
-function add_new_user()
-{
+
+function add_new_user(){
     var id = $("#add-new-user #add-user-id").val();
     var pwd = $("#add-new-user #add-user-pwd").val();
+    var pwd2 = $("#add-new-user #add-user-pwd-2").val();
     var name = $("#add-new-user #add-user-name").val();
     var email = $("#add-new-user #add-user-email").val();
-    var lang =  $("#add-new-user #select-preset-language").val();
+    var lang = $("#add-new-user #select-preset-language").val();
     var msg='';
 
     //Report Error
@@ -489,22 +480,24 @@ function add_new_user()
         if($("#add-new-user .required").eq(i).val() === ''
         || typeof($("#add-new-user .required").eq(i).val()) === 'undefined' ){
             err = true;
-            switch(i)
-            {
+            switch(i){
                 case 0:
-                    msg+='請填寫帳號<br>';
+                    msg += '請填寫帳號<br>';
                     break;
                 case 1:
-                    msg+='請填寫密碼<br>';
+                    msg += '請填寫密碼<br>';
                     break;
                 case 2:
-                    msg+='請填寫暱稱<br>';
+                    msg += '請填寫確認密碼<br>';
                     break;
                 case 3:
-                    msg+='請填寫電子郵件<br>';
+                    msg += '請填寫暱稱<br>';
                     break;
                 case 4:
-                    msg+='請選擇語言<br>';
+                    msg += '請填寫電子郵件<br>';
+                    break;
+                case 5:
+                    msg += '請選擇語言<br>';
                     break;
                 default:
                     break;
@@ -514,44 +507,43 @@ function add_new_user()
             $("#add-new-user .required").removeClass('err');
         }
     }
-    console.log("line 521");
-    if(err)
-    {
+
+    if(err){
         notice(msg);
         return;
     }
-    console.log("line 528");
+
     //Send data to back-end to check input validity
     $.post('/function/user-setting?type=add_new_user', {
         'id': id,
         'pwd': pwd,
+        'pwd2': pwd2,
         'name': name,
         'email': email,
         'lang': lang
     }, function(data){
-        console.log("line 535");
         if(data['Err']){
             if(data['Err'] === 'only[a-zA-Z0-9-_]{8,30}'){
-                msg = '<?php text('密碼只能由「字母、數字、-、_」組成且介於8~30字', '密码只能由「字母、数字、-、_」组成且介于8~30字')?>';
+                msg = '<?php text('密碼只能由「字母、數字、-、_」組成且介於8~30字', '密码只能由「字母、数字、-、_」组成且介于8~30字','Must be 8-30 characters, characters are letter,number,-,_ ')?>';
             }else if(data['Err'] === 'need-0-9'){
-                msg = '<?php text('密碼必需要含有數字', '密码必需要含有数字')?>';
+                msg = '<?php text('密碼必需要含有數字', '密码必需要含有数字','Need at least one number')?>';
             }else if(data['Err'] === 'need-a-z'){
-                msg = '<?php text('密碼必需要含有英文', '密码必需要含有英文')?>';
+                msg = '<?php text('密碼必需要含有英文', '密码必需要含有英文','Need at least one letter')?>';
             }else if(data['Err'] === 'only[a-zA-Z0-9-_{4,30}]'){
-                msg = '<?php text('帳號只能由「字母、數字、-、_」組成且介於4~30字', '帐号只能由「字母、数字、-、_」组成且介于4~30字')?>';
+                msg = '<?php text('帳號只能由「字母、數字、-、_」組成且介於4~30字', '帐号只能由「字母、数字、-、_」组成且介于4~30字','Must be 4-30 characters, characters are letter,numbers,-,_ ')?>';
             }else if(data['Err'] === 'ID existed'){
-                msg = '<?php text('帳號已經存在', '帐号已经存在')?>';
+                msg = '<?php text('帳號已經存在', '帐号已经存在','Account exists')?>';
+            }else if(data['Err'] === 'pwd is not equal pwd2'){
+                msg = '<?php text('密碼與確認密碼不符', '密码与确认密码不符', '密码与确认密码不符')?>';
             }else{
                 notice(data['Err']);
                 return;
             }
             notice(msg);
         }else{
-            console.log("Back to Homepage");
             window.location.href="/login";
         }
     }, 'json');
-    console.log("line 559");
 }
 
 function notice_close(){
