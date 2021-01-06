@@ -1,5 +1,5 @@
 <?php
-    $user_info  = User::get_user_public_info($_SESSION['login_id'], TRUE);
+    $user_info  = User::get_user_public_info($_SESSION['login_id'], User::MORE_INFO);
     $is_manager = User::is_manager($_SESSION['login_id']);
     $cid_managed_by_moderator = Classify::get_cid_managed_by($_SESSION['login_id']);
     $is_moderator = ($cid_managed_by_moderator != null)? TRUE : FALSE;
@@ -11,56 +11,56 @@
     </div>
     <div id="tab-container">
         <select id="select-tab">
-            <option value="personal"><?php text('個人資料','个人')?></option>
+            <option value="personal"><?php text('個人資料','个人', 'Personal')?></option>
             <?php if($is_manager || $is_moderator):?>
-            <option value="manage-punish"><?php text('水桶','水桶')?></option>
+            <option value="manage-punish"><?php text('水桶','水桶','Prohibition')?></option>
             <?php endif;?>
             <?php if($is_manager):?>
-            <option value="manage-user"><?php text('用戶管理','用户管理')?></option>
-            <option value="manage-board">看板管理</a></div>
-            <option value="manage-file"><?php text('檔案管理','文件管理')?></option>
+            <option value="manage-user"><?php text('用戶管理','用户管理','User Manager')?></option>
+            <option value="manage-board"><?php text('看板管理','看板管理','Fourm Manger');?></a></div>
+            <option value="manage-file"><?php text('檔案管理','文件管理','File Manager')?></option>
             <?php endif;?>
         </select>
         <div class="hide-bigger-than-600px">
-            <div class="tab-list now" data-tab="personal"><a href="javascript: void(0);" onclick="change_tab('personal');"><?php text('個人資料','个人')?></a></div>
+            <div class="tab-list now" data-tab="personal"><a href="javascript: void(0);" onclick="change_tab('personal');"><?php text('個人資料','个人','Personal')?></a></div>
             <?php if($is_manager || $is_moderator):?>
-            <div class="tab-list" data-tab="manage-punish"><a href="javascript: void(0);" onclick="change_tab('manage-punish');"><?php text('水桶','水桶')?></a></div>
+            <div class="tab-list" data-tab="manage-punish"><a href="javascript: void(0);" onclick="change_tab('manage-punish');"><?php text('水桶','水桶','Prohibition')?></a></div>
             <?php endif;?>
             <?php if($is_manager):?>
-            <div class="tab-list" data-tab="manage-user"><a href="javascript: void(0);" onclick="change_tab('manage-user');"><?php text('用戶管理','用户管理')?></a></div>
-            <div class="tab-list" data-tab="manage-board"><a href="javascript: void(0);" onclick="change_tab('manage-board');">看板管理</a></div>
-            <div class="tab-list" data-tab="manage-file"><a href="javascript: void(0);" onclick="change_tab('manage-file');"><?php text('檔案管理','文件管理')?></a></div>
+            <div class="tab-list" data-tab="manage-user"><a href="javascript: void(0);" onclick="change_tab('manage-user');"><?php text('用戶管理','用户管理','User Manager')?></a></div>
+            <div class="tab-list" data-tab="manage-board"><a href="javascript: void(0);" onclick="change_tab('manage-board');"><?php text('看板管理','看板管理','Classify Manager')?></a></div>
+            <div class="tab-list" data-tab="manage-file"><a href="javascript: void(0);" onclick="change_tab('manage-file');"><?php text('檔案管理','文件管理','File Manager')?></a></div>
             <?php endif;?>
         </div>
     </div>
     <div id="setting-container">
         <div class="tab" data-tab="personal">
             <div class="setting-area" id="change-password">
-                <div class="setting-area-title"><?php text('更換密碼', '更换密码')?></div>
+                <div class="setting-area-title"><?php text('更換密碼', '更换密码','Change Password')?></div>
                 <div class="col">
-                    <input class="normal required" id="ori-password" type="password" placeholder="<?php text('原密碼', '原密码')?>" onkeydown="key_enter(this, change_password)">
+                    <input class="normal required" id="ori-password" type="password" placeholder="<?php text('原密碼', '原密码','Password')?>" onkeydown="key_enter(this, change_password)">
                 </div>
                 <div class="col">
-                    <input class="normal required" id="new-password" type="password" placeholder="<?php text('新密碼', '新密码')?>" onkeydown="key_enter(this, change_password)">
+                    <input class="normal required" id="new-password" type="password" placeholder="<?php text('新密碼', '新密码','New Password')?>" onkeydown="key_enter(this, change_password)">
                 </div>
                 <div class="col">
-                    <input class="normal required" id="retype-password" type="password" placeholder="<?php text('確認新密碼', '确认新密码')?>" onkeydown="key_enter(this, change_password)">
+                    <input class="normal required" id="retype-password" type="password" placeholder="<?php text('確認新密碼', '确认新密码','Re-Type New Password')?>" onkeydown="key_enter(this, change_password)">
                 </div>
                 <div class="col" style="text-align: right;">
-                    <button class="blue" style="margin: 0px;" onclick="change_password()">更改</button>
+                    <button class="blue" style="margin: 0px;" onclick="change_password()"><?php text('更改', '更改','Confirm')?></button>
                 </div>
             </div>
             <div class="setting-area" id="change-email">
-                <div class="setting-area-title"><?php text('更換電郵地址', '更换电邮地址')?></div>
+                <div class="setting-area-title"><?php text('更換電郵地址', '更换电邮地址','Change Email')?></div>
                 <div class="col">
-                    <input class="normal required" id="input-new-email" type="text" placeholder="<?php text('輸入新的郵件地址', '输入新的邮件地址')?>"  value="<?php echo $_SESSION['user_info']['EMAIL']?>" onkeydown="key_enter(this, change_email)">
+                    <input class="normal required" id="input-new-email" type="text" placeholder="<?php text('輸入新的郵件地址', '输入新的邮件地址', 'Enter your new Email')?>"  value="<?php echo $_SESSION['user_info']['EMAIL']?>" onkeydown="key_enter(this, change_email)">
                 </div>
                 <div class="col" style="text-align: right;">
-                    <button class="blue" style="margin: 0px;" onclick="change_email()">更改</button>
+                    <button class="blue" style="margin: 0px;" onclick="change_email()"><?php text('更改', '更改','Confirm')?></button>
                 </div>
             </div>
             <div class="setting-area" id="change-language">
-                <div class="setting-area-title"><?php text('選擇語言', '选择语言');?></div>
+                <div class="setting-area-title"><?php text('選擇語言', '选择语言', 'Select Language');?></div>
                 <div class="col">
                     <select class="normal" id="select-language">
                         <?php
@@ -72,22 +72,22 @@
                     </select>
                 </div>
                 <div class="col" style="text-align: right;">
-                    <button class="blue" style="margin: 0px;" onclick="change_language()">更改</button>
+                    <button class="blue" style="margin: 0px;" onclick="change_language()"><?php text('更改', '更改','Confirm')?></button>
                 </div>
             </div>
             <div class="setting-area">
-                <div class="setting-area-title"><?php text('登入資訊', '登入信息')?></div>
+                <div class="setting-area-title"><?php text('登入資訊', '登入信息', 'Login Info')?></div>
                 <div class="col">
-                    角色：<?php echo permission_to_role($user_info['PERMISSION']);?>
+                    <?php text('角色：','角色：','Role:')?><?php echo permission_to_role($user_info['PERMISSION']);?>
                 </div>
                 <div class="col">
-                    <button class="blue center" onclick="window.location='./login?logout'">登出</button>
+                    <button class="blue center" onclick="window.location='./login?logout'"><?php text('登出','登出','Sign Out')?></button>
                 </div>
             </div>
 
             <?php if($is_manager):?>
             <div class="setting-area">
-                <div class="setting-area-title"><?php text('潛水模式', '潜水模式')?></div>
+                <div class="setting-area-title"><?php text('潛水模式', '潜水模式', 'Diving Mode')?></div>
                 <div class="col">
                     <div class="onoffswitch">
                         <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"
@@ -96,24 +96,24 @@
                     </div>
                 </div>
                 <div class="col">
-                    <span class="comment"><?php text('開啟潛水模式後，其他用戶無法知道你是否在線', '潜水模式激活后，其他用户无法知道你是否在线')?></span>
+                    <span class="comment"><?php text('開啟潛水模式後，其他用戶無法知道你是否在線', '潜水模式激活后，其他用户无法知道你是否在线', 'Turn off Active Status ')?></span>
                 </div>
             </div>
             <?php endif;?>
 
             <div class="setting-area">
-                <div class="setting-area-title"><?php text('刪除帳號', '删除帐号')?></div>
+                <div class="setting-area-title"><?php text('刪除帳號', '删除帐号', 'Delete Account')?></div>
                 <div class="col delete-account-button-col">
-                    <button class="red center" onclick="delete_account()"><?php text('刪除帳號', '删除帐号')?></button>
+                    <button class="red center" onclick="delete_account()"><?php text('刪除帳號', '删除帐号', 'Delete Account')?></button>
                 </div>
                 <div class="col delete-account-check-pwd-col" style="display: none;">
-                    <input class="normal required" id="delete-account-check-pwd" type="password" placeholder="<?php text('密碼', '密码')?>" onkeydown="key_enter(this, change_password)" autocomplete="off">
+                    <input class="normal required" id="delete-account-check-pwd" type="password" placeholder="<?php text('密碼', '密码', 'Password')?>" onkeydown="key_enter(this, change_password)" autocomplete="off">
                 </div>
                 <div class="col delete-account-check-pwd-col" style="display: none;">
-                    <button class="red center" onclick="real_delete_account()"><?php text('確認刪除帳號', '确认删除帐号')?></button>
+                    <button class="red center" onclick="real_delete_account()"><?php text('確認刪除帳號', '确认删除帐号', 'Confirm')?></button>
                 </div>
                 <div class="col">
-                    <span class="comment"><?php text('刪除帳號會永久刪除所有文章以及回覆，操作不可回復', '删除帐号会永久删除所有帳號資料、文章、留言、回覆、...等，操作不可回复')?></span>
+                    <span class="comment"><?php text('刪除帳號會永久刪除所有文章以及回覆，操作不可回復', '删除帐号会永久删除所有帳號資料、文章、留言、回覆、...等，操作不可回复', 'Delete Account will remove all Articles,Replies,Likes etc permanently. This action cannot be undo(Account Restore)')?></span>
                 </div>
             </div>
         </div>
@@ -179,7 +179,7 @@ function change_password(){
         }
     }
     if(err){
-        notice('<?php text('請填妥所有欄位','请填妥所有栏位')?>');
+        notice('<?php text('請填妥所有欄位','请填妥所有栏位','Please fill in all the field')?>');
         return;
     }
 
@@ -191,7 +191,7 @@ function change_password(){
     }
 
     if(err){
-        notice('<?php text('密碼與確認密碼不同','密码与确认密码不同')?>');
+        notice('<?php text('密碼與確認密碼不同','密码与确认密码不同','Retype Password and Password are not the same')?>');
         return;
     }
 
@@ -204,13 +204,13 @@ function change_password(){
             console.log(data['Err']);
             var msg;
             if(data['Err'] === 'password-error'){
-                notice('<?php text('原密碼錯誤', '原密码错误')?>');
+                notice('<?php text('原密碼錯誤', '原密码错误','Wrong Password')?>');
             }else if(data['Err'] === 'only[a-zA-Z0-9-_]{8,30}'){
-                notice('<?php text('新密碼只能由「字母、數字、-、_」組成且介於8~30字', '新密码只能由「字母、数字、-、_」组成且介于8~30字')?>');
+                notice('<?php text('新密碼只能由「字母、數字、-、_」組成且介於8~30字', '新密码只能由「字母、数字、-、_」组成且介于8~30字','Must be 8-30 characters, characters should be letter, number, dash or underscore')?>');
             }else if(data['Err'] === 'need-0-9'){
-                notice('<?php text('新密碼必需要含有數字', '新密码必需要含有数字')?>');
+                notice('<?php text('新密碼必需要含有數字', '新密码必需要含有数字','At least one Number')?>');
             }else if(data['Err'] === 'need-a-z'){
-                notice('<?php text('新密碼必需要含有英文', '新密码必需要含有英文')?>');
+                notice('<?php text('新密碼必需要含有英文', '新密码必需要含有英文','At least one Letter')?>');
             }else{
                 notice(data['Err']);
             }
@@ -219,7 +219,7 @@ function change_password(){
             $("#change-password #ori-password").val('');
             $("#change-password #new-password").val('');
             $("#change-password #retype-password").val('');
-            notice('<?php text('密碼變更成功', '密码变更成功')?>');
+            notice('<?php text('密碼變更成功', '密码变更成功','Changed Password')?>');
         }
     }, 'json');
 }
@@ -233,7 +233,7 @@ function change_email(){
             notice(data['Err']);
             return;
         }else{
-            notice('<?php text('已發送驗證信至新郵箱，請前往確認', '已发送验证信至新邮箱，请前往确认')?>');
+            notice('<?php text('已發送驗證信至新郵箱，請前往確認', '已发送验证信至新邮箱，请前往确认','Verification Code has sent to Your Mailbox')?>');
         }
     }, 'json');
 }
@@ -247,7 +247,7 @@ function change_language(){
             notice(data['Err']);
             return;
         }else{
-            notice('<?php text('語言變更成功，重新整理後更新', '语言变更成功，重新整理后更新')?>');
+            notice('<?php text('語言變更成功，重新整理後更新', '语言变更成功，重新整理后更新',' Language Changed, Refresh to Update')?>');
         }
     }, 'json');
 }
@@ -301,9 +301,9 @@ function switch_diving_mode(o){
             return;
         }else{
             if(diving){
-                notice('<?php text('潛水模式已開啟', '潜水模式已激活')?>');
+                notice('<?php text('潛水模式已開啟', '潜水模式已激活','Prohibition Mode Activated')?>');
             }else{
-                notice('<?php text('潛水模式已關閉', '潜水模式已关闭')?>');
+                notice('<?php text('潛水模式已關閉', '潜水模式已关闭','Prohibition Mode Deactivated')?>');
             }
         }
     }, 'json');

@@ -3,6 +3,7 @@
     if($url_id == 'index'){
         $tab = !empty($_GET['tab'])? $_GET['tab'] : 'all';
     }else if($url_id == 'article'){
+        $article_info = Article::get_info_by_serial($_GET['serial']);
         $tab = $article_info['CLASSIFY'];
     }else if($url_id == 'user'){
         $tab = 'user';
@@ -16,8 +17,8 @@
 ?>
 <!-- navigation header -->
 <div id="bookmark"> <!-- Device size bigger than 700px -->
-    <div class="bigger-than-700px bookmark-list<?php if($tab == 'user') echo ' now';?>" data-tab="user"><a href="/user" onclick="goto_user_by_user_id('<?php echo $be_visited_user?>'); return false;">用戶</a></div>
-    <div class="bigger-than-700px bookmark-list<?php if($tab == 'all') echo ' now';?>" data-tab="all"><a href="/" onclick="goto_index_by_tab('all'); return false;">全部看板</a></div>
+    <div class="bigger-than-700px bookmark-list<?php if($tab == 'user') echo ' now';?>" data-tab="user"><a href="/user" onclick="goto_user_by_user_id('<?php echo $_SESSINO['login_id']?>'); return false;"><?php text('用戶', '用戶', 'User');?></a></div>
+    <div class="bigger-than-700px bookmark-list<?php if($tab == 'all') echo ' now';?>" data-tab="all"><a href="/" onclick="goto_index_by_tab('all'); return false;"><?php text('全部看板', '全部看板', 'All')?></a></div>
     <?php
         foreach($classify_list as $v){
             $now = ($tab == $v['ID'])? ' now' : '';
@@ -25,7 +26,7 @@
         }
     ?>
     <select id="select-tab" class="smaller-than-700px"> <!-- Device size smaller than 700px -->
-        <option value="all"><?php text('全部看板', '全部看板')?></option>
+        <option value="all"><?php text('全部看板', '全部看板', 'All')?></option>
         <?php
             foreach($classify_list as $v){
                 $selected = ($tab == $v['ID'])? ' selected' : '';
@@ -36,7 +37,6 @@
 </div>
 
 <div id="wrapper">
-    <img src="/assets/img/cover.png?20201201" id="cover-photo">
     <div id="wrapper-flex">
     <?php if($url_id == 'index'):?>
         <div id="global-info">
@@ -58,7 +58,7 @@
         <div id="global-info" style="display:none;"></div>
         <div id="bio-container">
         <?php
-            echo render_bio(User::get_user_public_info($article_info['USER']['ID'], TRUE), $article_info['USER']['ID'] == $_SESSION['login_id']);
+            echo render_bio(User::get_user_public_info($article_info['USER']['ID'], User::MORE_INFO), $article_info['USER']['ID'] == $_SESSION['login_id']);
         ?>
         </div>
         <div id="article-container" class="article-container">
@@ -159,7 +159,7 @@ function search(){
     continue_load_article(0);
 }
 
-function continue_load_article(from){
+function continue_load_article(from){ //162
     if(typeof from === 'undefined') from = window.next_article_list;
     window.lock_continue_load_article = true;
     $('.continue-load-article-button').hide('fast');
@@ -230,7 +230,7 @@ function index_mode_init(){
     window.next_article_list = <?php echo $next_article_list;?>;
     window.setInterval(function(){
         $.get('/function/load',{
-            'type' : 'render_online_list'
+            'type' : 'render-online-list'
         }, function(data){
             $('.online-list').html(data['Render_result']);
         }, 'json');
@@ -243,14 +243,14 @@ function goto_index_by_tab(tab){
     window.mode = 'index';
     window.classify = tab;
 
+    var url = (tab !== 'all')? '/?tab=' + tab : '/';
+    pjax(url, tab);
+
     $("#article-list").show();
     $("#article-container").hide();
     $("#bio-container").fadeOut(function(){
         $("#global-info").fadeIn();
     });
-
-    var url = (tab !== 'all')? '/?tab=' + tab : '/';
-    window.history.replaceState(null, '', url);
 
     $("#bookmark .bookmark-list:not([data-tab='" + tab + "'])").removeClass('now');
     $("#bookmark .bookmark-list[data-tab='" + tab + "']").addClass('now');
@@ -509,6 +509,5 @@ function goto_star_article(){
     }
     continue_load_article(0);
 }
-
 </script>
 <?php include './include/bio-edit.php';?>

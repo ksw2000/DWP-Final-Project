@@ -2,8 +2,8 @@
 <div id="fixed_container">
     <div class="container" id="image_cropper">
         <p style="margin-top:10px;">
-            <button class="blue" id="button-crop">剪裁</button>
-            <button class="blue" onclick="close_crop()"><?php text('關閉', '关闭')?></button>
+            <button class="blue" id="button-crop"><?php text('剪裁', '剪裁', 'Crop');?></button>
+            <button class="blue" onclick="close_crop()"><?php text('關閉', '关闭', 'Close')?></button>
         </p>
         <img id="upload-image" src="" style="width:100%; height:auto;">
     </div>
@@ -58,11 +58,11 @@ function toggle_bio_edit_area(){
 
 function edit_bio(){
     var more_info = {
-        'BIRTHDAY' : $("#bio-edit #birthday").val(),
-        'HOBBY'    : $("#bio-edit #hobby").val(),
-        'FROM'     : $("#bio-edit #from").val(),
-        'LINK'     : $("#bio-edit #link").val(),
-        'BIO'      : window.editor.getData()
+        'BIRTHDAY'  : $("#bio-edit #birthday").val(),
+        'HOBBY'     : $("#bio-edit #hobby").val(),
+        'COME_FROM' : $("#bio-edit #from").val(),
+        'LINK'      : $("#bio-edit #link").val(),
+        'BIO'       : window.editor.getData()
     };
 
     $.post('/function/user-setting?type=edit_bio', {
@@ -73,7 +73,7 @@ function edit_bio(){
             console.log(data);
             if(data['Err'] == 'name con be none-empty'){
                 $("#bio-edit #name").css("border", "1px solid #d20202");
-                $("#bio-edit #name").attr("placeholder", "<?php text('不可為空', '不可为空')?>");
+                $("#bio-edit #name").attr("placeholder", "<?php text('不可為空', '不可为空', 'Cannot be empty')?>");
             }
         }else{
             $("#bio-container").fadeOut('slow', function() {
@@ -198,11 +198,13 @@ function profile_upload(){
         type: "POST",
         url: "/function/upload?type=profile",
         success: function(data){
-            console.log(data);
             $("#profile-photo").attr("src", data['File'][0].Client_path);
+            $("#profile-photo").show();
+            $("#profile-photo-uploading").hide();
         },
         beforeSend: function(){
-            $("#profile-photo").attr("src", "/assets/img/loading.gif");
+            $("#profile-photo").hide();
+            $("#profile-photo-uploading").show();
         },
         error: function(xhr, ajaxOptions, thrownError){
             console.log(xhr.status, thrownError);

@@ -102,7 +102,7 @@ $list .= '</select>';
 
 <div id="wrapper">
     <div class="main-edit-wrapper">
-        <div id="title"><input type="text" placeholder="<?php text('標題', '标题')?>" value="<?php echo $preset['TITLE']?>"></div>
+        <div id="title"><input type="text" placeholder="<?php text('標題', '标题', 'Title')?>" value="<?php echo $preset['TITLE']?>"></div>
 
         <div id="classify">
             <?php echo $list;?>
@@ -111,30 +111,30 @@ $list .= '</select>';
             <div id="mainEditor"><?php echo $preset['CONTENT']?></div>
         </div>
         <div id="button-area">
-            <button id="attach-pic" onchange="attach(event, 'img')" class="attachment green"><?php text('圖片', '图片')?>
+            <button id="attach-pic" onchange="attach(event, 'img')" class="attachment green"><?php text('圖片', '图片', 'Photo')?>
                 <form enctype="multipart/form-data">
                     <input type="file" multiple="" name="img" accept="image/*">
                 </form>
             </button>
-            <button id="attach-music" onchange="attach(event, 'music')" class="attachment green"><?php text('音樂', '音乐')?>
+            <button id="attach-music" onchange="attach(event, 'music')" class="attachment green"><?php text('音樂', '音乐', 'Music')?>
                 <form enctype="multipart/form-data">
                     <input type="file" multiple="" name="music" accept="audio/*">
                 </form>
             </button>
-            <button id="attach-video" onchange="attach(event, 'video')" class="attachment green"><?php text('影片', '视频')?>
+            <button id="attach-video" onchange="attach(event, 'video')" class="attachment green"><?php text('影片', '视频', 'Video')?>
                 <form enctype="multipart/form-data">
                     <input type="file" multiple="" name="video" accept="video/mp4">
                 </form>
             </button>
-            <button id="attach-normal" onchange="attach(event, 'normal')" class="attachment green"><?php text('檔案', '档案')?>
+            <button id="attach-normal" onchange="attach(event, 'normal')" class="attachment green"><?php text('檔案', '档案', 'File')?>
                 <form enctype="multipart/form-data">
                     <input type="file" multiple="" name="normal" accept="*/*">
                 </form>
             </button>
             <?php if($edit):?>
-                <button id="publish" class="blue" onclick="publish()"><?php text('編輯完成', '编辑完成');?></button>
+                <button id="publish" class="blue" onclick="publish()"><?php text('編輯完成', '编辑完成', 'Done');?></button>
             <?php else:?>
-                <button id="publish" class="blue" onclick="publish()"><?php text('發佈', '发布');?></button>
+                <button id="publish" class="blue" onclick="publish()"><?php text('發佈', '发布', 'Post');?></button>
             <?php endif;?>
         </div>
         <div id="attachment-area">
