@@ -1,5 +1,7 @@
 <?php
 class User{
+    const MORE_INFO = TRUE;
+    const MORE_INFO_COLUMN = array('BIRTHDAY', 'HOBBY', 'COME_FROM', 'LINK', 'BIO');
     private static $_error = '';
     private static $_online_number = -1;
 
@@ -49,7 +51,7 @@ class User{
     // Has id already been existed?
     public static function id_existed($user_id){
         $db = new DB;
-        $res = $db->query("SELECT COUNT(ID) as num WHERE ID = ?", $user_id);
+        $res = $db->query("SELECT COUNT(ID) as num FROM user WHERE ID = ?", $user_id);
         return $res->fetch_assoc()['num'] > 0;
     }
 
@@ -58,11 +60,11 @@ class User{
     // do not check if repeat id
     public static function new($id, $password, $name, $email, $lang, $permission=0){
         $db = new DB;
-        $res = $db->query("INSERT INTO user(
-            ID, SALT, PASSWORD, NAME, EMAIL,
-            LANGUAGE, PERMISSION, READTIME, MORE_INFO)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        $id, random(32), SELF::hash($password, $salt), htmlentities($name), $email,
+        $salt = random(32);
+        $res = $db->query("INSERT INTO user(ID, SALT, PASSWORD, NAME, EMAIL,
+                           LANGUAGE, PERMISSION, READTIME)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        $id, $salt, SELF::hash($password, $salt), htmlentities($name), $email,
         (int)$lang, (int)$permission, time(), "{}");
         return (!$res)? FALSE : TRUE;
     }
@@ -79,16 +81,17 @@ class User{
         return SELF::hash($password, $row['SALT']) === $row['PASSWORD'];
     }
 
-    public static function change_pwd($user_id, $password){
+    public static function change_pwd($user_id, $raw_pwd){
         $db  = new DB;
-        $res = $db->query("SELECT count(ID) as num SALT
-        FROM user WHERE ID = ?", $user_id);
+        $salt = random(32);
 
+        $res = $db->query("SELECT count(ID) as num FROM user WHERE ID = ?", $user_id);
         $row = $res->fetch_assoc();
+
         if($row['num'] == 0) return FALSE;
 
-        $res = $db->query("UPDATE user SET PASSWORD = ? WHERE ID = ?",
-            SELF::hash($password, $row['SALT']), $user_id);
+        $res = $db->query("UPDATE user SET SALT = ?, PASSWORD = ? WHERE ID = ?",
+                           $salt, SELF::hash($raw_pwd, $salt), $user_id);
 
         return $db->err === "";
     }
@@ -118,36 +121,34 @@ class User{
     }
 
     // 取得公開該用戶的公開資料
-    public static function get_user_public_info($user_id, $more_info = FALSE){
+    public static function get_user_public_info($user_id, $more_info = !SELF::MORE_INFO){
         $db = new DB;
-        if($more_info){
-            $res = $db->query('SELECT ID, NAME, PROFILE, EMAIL, PERMISSION,
-            ONLINE, DIVING, READTIME, LANGUAGE, MORE_INFO
-            FROM user WHERE ID = ?', $user_id);
+        $res = $db->query('SELECT ID, NAME, PROFILE, EMAIL, PERMISSION,
+                           ONLINE, DIVING, READTIME, LANGUAGE
+                           FROM user WHERE ID = ?', $user_id);
+        $row = $res->fetch_assoc();
 
-            $row = $res->fetch_assoc();
-            $more_info = json_decode($row['MORE_INFO'], TRUE);
+        if($more_info === !SELF::MORE_INFO) return $row;
 
-            $more_info_preset = array('BIRTHDAY' => '', 'HOBBY' => '', 'FROM' => '', 'LINK' => '', 'BIO' => '');
-            $row['MORE_INFO'] = $more_info_preset;
-            $row['MORE_INFO_HTMLENTITIES'] = $more_info_preset;
 
-            // if json_decode is correct
-            if(json_last_error() == JSON_ERROR_NONE){
-                foreach($more_info_preset as $k => $v) {
-                    if(!empty($more_info[$k])){
-                        $row['MORE_INFO'][$k] = $more_info[$k];
-                        $row['MORE_INFO_HTMLENTITIES'][$k] = htmlentities($more_info[$k]);
-                    }
-                }
+        $res = $db->query('SELECT BIRTHDAY, HOBBY, COME_FROM, LINK, BIO
+                           FROM user_more_info WHERE ID = ?', $user_id);
+        $row['MORE_INFO'] = array();
+        $row['MORE_INFO_HTMLENTITIES'] = array();
+        if($res->num_rows != 0){
+            foreach($res->fetch_assoc() as $k => $v){
+                $row['MORE_INFO'][$k] = $v;
+                $row['MORE_INFO_HTMLENTITIES'][$k] = htmlentities($v);
             }
-
-            return $row;
+        }else{
+            // give default value
+            foreach(SELF::MORE_INFO_COLUMN as $v){
+                $row['MORE_INFO'][$v] = '';
+                $row['MORE_INFO_HTMLENTITIES'][$v] = '';
+            }
         }
 
-        $res = $db->query('SELECT ID, NAME, PROFILE, EMAIL, PERMISSION, ONLINE, DIVING,
-        READTIME, LANGUAGE FROM user WHERE ID = ?', $user_id);
-        return $res->fetch_assoc();
+        return $row;
     }
 
     // 設定新的頭貼
@@ -176,8 +177,31 @@ class User{
 
     public static function update_more_info($user_id, $more_info){
         $db = new DB;
-        $db->query("UPDATE user SET MORE_INFO = ? WHERE ID = ?", $more_info, $user_id);
-        return $db->err === "";
+        $more_info = json_decode($more_info, TRUE);
+
+        if(json_last_error() === JSON_ERROR_NONE){
+            $input = array();
+            foreach (SELF::MORE_INFO_COLUMN as $v) {
+                $input[$v] = $more_info[$v] ?? '';
+            }
+
+            $res = $db->query("SELECT COUNT(ID) as num FROM user_more_info
+                               WHERE ID = ?", $user_id);
+            if($res->fetch_assoc()['num'] > 0){
+                $db->query('UPDATE user_more_info SET BIRTHDAY = ?, HOBBY = ?,
+                            COME_FROM = ?, LINK = ?, BIO = ? WHERE ID = ?',
+                            $input['BIRTHDAY'], $input['HOBBY'],
+                            $input['COME_FROM'], $input['LINK'], $input['BIO'],
+                            $user_id);
+            }else{
+                $db->query('INSERT INTO user_more_info(ID, BIRTHDAY, HOBBY,
+                            COME_FROM, LINK, BIO) VALUES (?, ?, ?, ?, ?, ?)',
+                            $user_id, $input['BIRTHDAY'], $input['HOBBY'],
+                            $input['COME_FROM'], $input['LINK'], $input['BIO']);
+            }
+
+            return $db->err === "";
+        }
     }
 
     public static function update_online($user_id, $time = null){

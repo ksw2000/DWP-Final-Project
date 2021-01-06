@@ -4,7 +4,7 @@ class DB{
     public $err;
     public $pre_command;
     function __construct(){
-        $this->conn = new mysqli('localhost', 'admin', 'Prk8n1iDV2nyXL0z', 'main');
+        $this->conn = new mysqli('localhost', 'admin_longer', '4fD8a9p%', 'hadname_longer');
         if($this->conn->connect_error){
             die("Connect fail");
         }

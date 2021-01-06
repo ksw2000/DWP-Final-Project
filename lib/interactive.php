@@ -17,7 +17,7 @@ class Interactive{
         // if no INSERT
         // else UPDATE / DELETE (Toggle)
         $db = new DB;
-        $res = $db->query('SELECT COUNT(TYPE) as num, TYPE FROM '.$db_name.'
+        $res = $db->query('SELECT COUNT(TYPE) as num, TYPE FROM `'.$db_name.'`
                            WHERE USER = ? and `SERIAL` = ?',
                            $user_id, $serial);
         $row = $res->fetch_assoc();
@@ -25,7 +25,7 @@ class Interactive{
         if($row['num'] == 0){
             if($type == 0) SELF::$_action = SELF::LIKE;
             // add new record
-            $res = $db->query('INSERT INTO `'.$db_name.'`(`USER`, `SERIAL`, `TYPE`)
+            $db->query('INSERT INTO `'.$db_name.'`(USER, `SERIAL`, TYPE)
                         VALUES (?, ?, ?)', $user_id, $serial, $type);
             return;
         }
@@ -35,14 +35,15 @@ class Interactive{
             if($type == 0) SELF::$_action = SELF::CANCEL_LIKE;
             // DELETE
             $db->query('DELETE FROM `'.$db_name.'`
-                        WHERE `USER` = ? and `SERIAL` = ?', $user_id, $serial);
+                        WHERE USER = ? and `SERIAL` = ?', $user_id, $serial);
             return;
         }
 
         // UPDATE
-        $db->query('UPDATE `'.$db_name.'` SET `TYPE` = ?
-                    WHERE `USER` = ? and `SERIAL` = ?',
+        $db->query('UPDATE `'.$db_name.'` SET TYPE = ?
+                    WHERE USER = ? and `SERIAL` = ?',
                     $type, $user_id, $serial);
+        return;
     }
 
     // Audo update like-dislike & return the number of likes or dislikes
@@ -98,11 +99,11 @@ class Interactive{
     public static function star_article_auto($user_id, $serial){
         $db = new DB;
         if(SELF::has_user_starred_the_article($user_id, $serial)){
-            $res = $db->query('DELETE FROM `article_star`
-                               WHERE `USER` = ? and `SERIAL` = ?', $user_id, $serial);
+            $res = $db->query('DELETE FROM article_star
+                               WHERE USER = ? and `SERIAL` = ?', $user_id, $serial);
             $nums = 0;
         }else{
-            $res = $db->query('INSERT INTO `article_star`(`USER`, `SERIAL`, `TIME`)
+            $res = $db->query('INSERT INTO article_star(USER, `SERIAL`, `TIME`)
                                VALUES (?, ?, ?)', $user_id, $serial, time());
             $nums = 1;
         }

@@ -3,10 +3,10 @@ class Reply{
     private $_next;
     private $_reply_list;
 
-    private function _get_next_floor($article_serial){
+    private static function _get_next_floor($article_serial){
         $db = new DB;
-        $res = $db->query("SELECT COUNT(ARTICLE_SERIAL) as num from reply
-                    WHERE ARTICLE_SERIAL = ?", $article_serial);
+        $res = $db->query("SELECT COUNT(ARTICLE_SERIAL) as num FROM reply
+                           WHERE ARTICLE_SERIAL = ?", $article_serial);
 
         return 1 + $res->fetch_assoc()['num'];
     }
@@ -24,17 +24,18 @@ class Reply{
     }
 
     // return new serial number
-    public function add_reply($article_serial, $user_id, $tag, $content){
-        $floor   = $this->_get_next_floor($article_serial);
+    public static function add_reply($article_serial, $user_id, $tag, $content){
+        $floor = SELF::_get_next_floor($article_serial);
 
         $db = new DB;
-        $res = $db->query("INSERT INTO `reply`(`ARTICLE_SERIAL`, `USER`,
-                    `FLOOR`, `TAG`, `CONTENT`, `TIME`) VALUES (?, ?, ?, ?, ?, ?)",
-                $article_serial, $user_id, $floor, $tag, $content, time());
+        $res = $db->query("INSERT INTO reply(ARTICLE_SERIAL, USER, `FLOOR`,
+                           TAG, CONTENT, `TIME`)
+                           VALUES (?, ?, ?, ?, ?, ?)",
+                           $article_serial, $user_id, $floor, $tag, $content, time());
 
         if($res){
             $res = $db->query("SELECT `SERIAL` FROM reply WHERE ARTICLE_SERIAL = ?
-                        and USER = ? and FLOOR = ?", $article_serial, $user_id, $floor);
+                        and USER = ? and `FLOOR` = ?", $article_serial, $user_id, $floor);
 
             return $res->fetch_assoc()['SERIAL'];
         }
@@ -64,7 +65,7 @@ class Reply{
         return TRUE;
     }
 
-    public function delete_by_article($article_serial){
+    public static function delete_by_article($article_serial){
         $db = new DB;
         $res = $db->query("SELECT `SERIAL` FROM reply WHERE ARTICLE_SERIAL = ?",
                     $article_serial);
@@ -113,21 +114,20 @@ class Reply{
         return $this->_reply_list;
     }
 
-    public function get_reply_by_serial($serial){
+    public static function get_reply_by_serial($serial){
         $db = new DB;
         $res = $db->query("SELECT * FROM reply WHERE `SERIAL` = ?", $serial);
 
-        if($res->num_rows > 0) {
+        if($res->num_rows > 0){
             $row = $res->fetch_assoc();
             $row['USER'] = User::get_user_public_info($row['USER']);
-            $inter = new Interactive;
-            $row += $inter->get_reply_interactive_num($serial);
+            $row += Interactive::get_reply_interactive_num($serial);
             return $row;
         }
         return array();
     }
 
-    public function get_reply_num_by_article_serial($article_serial){
+    public static function get_reply_num_by_article_serial($article_serial){
         $db = new DB;
         $res = $db->query("SELECT ARTICLE_SERIAL FROM reply
                            WHERE ARTICLE_SERIAL = ?", $article_serial);

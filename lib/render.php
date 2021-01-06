@@ -3,6 +3,28 @@ function render_complete_time($timestamp){
     return date("Y-m-d H:i:s", $timestamp);
 }
 
+function render_title($url_id, $param, $be_visited_user){
+    $title = text_r('龍哥論壇', '龙哥论坛', 'Longer Forum');
+
+    if($url_id == 'user' || $url_id == 'chat'){
+        $user_info = User::get_user_public_info($be_visited_user);
+        $title = $user_info['NAME'].'::'.$title;
+    }else if($url_id == 'add'){
+        if(isset($param['edit'])){
+            $title = text_r('修改貼文', '修改贴文', 'Edit').'::'.$title;
+        }else{
+            $title = text_r('貼文', '贴文', 'Post').'::'.$title;
+        }
+    }else if($url_id == 'setting'){
+        $title = text_r('設定', '设置','Setting').'::'.$title;
+    }else if($url_id == 'article'){
+        $article_info = Article::get_info_by_serial($param['serial']);
+        $title = $article_info['TITLE'].'::'.$article_info['USER']['NAME'].'::'.$title;
+    }
+
+    return $title;
+}
+
 function render_time($timestamp){
     // 小於一分鐘
     if(time()-$timestamp < 60){
@@ -11,12 +33,12 @@ function render_time($timestamp){
 
     // 小於一小時內
     if(time()-$timestamp < 60*60){
-        return ceil((time()-$timestamp)/60) .text_r('分鐘前', '分钟前', 'minutes ago');
+        return ceil((time()-$timestamp)/60) .text_r('分鐘前', '分钟前', ' minutes ago');
     }
 
     // 小於一天
     if(time()-$timestamp < 24*60*60){
-        return ceil((time()-$timestamp)/60/60) .text_r('小時前', '小时前', 'hours ago');
+        return ceil((time()-$timestamp)/60/60) .text_r('小時前', '小时前', ' hours ago');
     }
 
     // 同一年
@@ -34,9 +56,9 @@ function profile_photo_to_url($row_user_profile){
 function permission_to_role($role){
     switch ($role) {
         case '0':
-            return text_r('一般會員', '一般会员', 'Normal member');
+            return text_r('一般會員', '一般会员', 'Member');
         case '1':
-            return text_r('管理員', '管理员', 'Manager');
+            return text_r('管理員', '管理员', 'Administrator');
         default:
             return '';
     }
@@ -117,7 +139,7 @@ function render_reply_list($reply, $reader_info, $classify_id = null){
 
     if($has_next_reply){
         $ret.= '<center>';
-        $ret.= '<button onclick="continue_load_reply()" class="blue continue-load-reply-button">'.text_r('載入更多...', '加载更多...', 'loading...').'</button>';
+        $ret.= '<button onclick="continue_load_reply()" class="blue continue-load-reply-button">'.text_r('載入更多...', '加载更多...', 'Loading...').'</button>';
         $ret.= '</center>';
     }
     return $ret;
@@ -234,11 +256,11 @@ function render_article_list($article, $reader_id, $flags = 0){
 
     if(empty($article_info_list) && (($flags & RENDER_FISRT_LIST) == RENDER_FISRT_LIST)){
         if(($flags & RENDER_QUERY_MODE) == RENDER_QUERY_MODE){
-            $ret .= '<div class="tip-no-article">Oops! '.text_r('查無相關文章', '查无相关文章', 'Can not find articles about this').'</div>';
+            $ret .= '<div class="tip-no-article">Oops! '.text_r('查無相關文章', '查无相关文章', 'There is no related Article').'</div>';
         }else if(($flags & RENDER_STAR_MODE) == RENDER_STAR_MODE){
-            $ret .= '<div class="tip-no-article">Oops! '.text_r('尚無收藏的文章', '尚无收藏的文章', 'No starred articles').'</div>';
+            $ret .= '<div class="tip-no-article">Oops! '.text_r('尚無收藏的文章', '尚无收藏的文章', 'No Starred Articles').'</div>';
         }else{
-            $ret .= '<div class="tip-no-article">Oops! '.text_r('空空如也，尚無文章', '空空如也，尚无文章', 'No articles').'</div>';
+            $ret .= '<div class="tip-no-article">Oops! '.text_r('空空如也，尚無文章', '空空如也，尚无文章', 'No Articles').'</div>';
         }
     }
 
@@ -276,9 +298,9 @@ function render_article_list($article, $reader_id, $flags = 0){
             if((($flags & RENDER_CLASSIFY_TOP_BUTTON) == RENDER_CLASSIFY_TOP_BUTTON)
                 && ($reader_info['PERMISSION'] == 1 || $is_moderator)){
                 if($row['TOP'] == 1){
-                    $ret .= '<li><a href="javascript:void(0);" onclick="set_top(\''.$row['SERIAL'].'\', true)"><i class="material-icons">star</i>'.text_r('取消置頂', '取消置顶', 'Upin from top').'</a></li>';
+                    $ret .= '<li><a href="javascript:void(0);" onclick="set_top(\''.$row['SERIAL'].'\', true)"><i class="material-icons">star</i>'.text_r('取消置頂', '取消置顶', 'Unpin').'</a></li>';
                 }else{
-                    $ret .= '<li><a href="javascript:void(0);" onclick="set_top(\''.$row['SERIAL'].'\', false)"><i class="material-icons">star</i>'.text_r('置頂', '置顶', 'Pin to top').'</a></li>';
+                    $ret .= '<li><a href="javascript:void(0);" onclick="set_top(\''.$row['SERIAL'].'\', false)"><i class="material-icons">star</i>'.text_r('置頂', '置顶', 'Pin').'</a></li>';
                 }
             }
             // 可取消收藏
@@ -361,19 +383,11 @@ function render_article_list($article, $reader_id, $flags = 0){
 }
 
 function render_bio_edit_area($user_info){ //edit the user info
-    if($user_info['MORE_INFO_HTMLENTITIES'] != null){
-        $birthday = $user_info['MORE_INFO_HTMLENTITIES']['BIRTHDAY'] ?? '';
-        $hobby    = $user_info['MORE_INFO_HTMLENTITIES']['HOBBY'] ?? '';
-        $from     = $user_info['MORE_INFO_HTMLENTITIES']['FROM'] ?? '';
-        $link     = $user_info['MORE_INFO_HTMLENTITIES']['LINK'] ?? '';
-        $bio      = $user_info['MORE_INFO']['BIO'] ?? '';
-    }else{
-        $birthday = '';
-        $hobby    = '';
-        $from     = '';
-        $link     = '';
-        $bio      = '';
-    }
+    $birthday = $user_info['MORE_INFO_HTMLENTITIES']['BIRTHDAY'];
+    $hobby    = $user_info['MORE_INFO_HTMLENTITIES']['HOBBY'];
+    $from     = $user_info['MORE_INFO_HTMLENTITIES']['COME_FROM'];
+    $link     = $user_info['MORE_INFO_HTMLENTITIES']['LINK'];
+    $bio      = $user_info['MORE_INFO']['BIO'];
 
     return '
     <div id="bio-edit">
@@ -381,13 +395,13 @@ function render_bio_edit_area($user_info){ //edit the user info
             <i class="material-icons">person</i><input class="normal" type="text" placeholder="'.text_r('名字', '名字', 'Name').'" value="'.$user_info['NAME'].'" id="name">
         </div>
         <div class="col">
-            <i class="material-icons">cake</i><input class="normal" type="text" placeholder="'.text_r('生日是', '生日是', 'Being born at').'..." value="'.$birthday.'" id="birthday">
+            <i class="material-icons">cake</i><input class="normal" type="text" placeholder="'.text_r('生日是', '生日是', 'Birthday').'..." value="'.$birthday.'" id="birthday">
         </div>
         <div class="col">
             <i class="material-icons">sentiment_satisfied</i><input class="normal" type="text" placeholder="'.text_r('興趣是', '兴趣是', 'Hobby').'..." value="'.$hobby.'" id="hobby">
         </div>
         <div class="col">
-            <i class="material-icons">place</i><input class="normal" type="text" placeholder="'.text_r('來自', '来自', 'Come from').'..." value="'.$from.'" id="from">
+            <i class="material-icons">place</i><input class="normal" type="text" placeholder="'.text_r('來自', '来自', 'Homeland').'..." value="'.$from.'" id="from">
         </div>
         <div class="col">
             <i class="material-icons">link</i><input class="normal" type="text" placeholder="'.text_r('連結', '链結', 'Link').'" value="'.$link.'" id="link">
@@ -404,25 +418,20 @@ function render_bio_edit_area($user_info){ //edit the user info
 
 //Edit profile Picture(Profile Page)
 function render_bio($user_info, $include_edit_area = FALSE){
-    if($user_info['MORE_INFO_HTMLENTITIES'] != null)//The data which user has enter
-    {
-        $birthday = $user_info['MORE_INFO_HTMLENTITIES']['BIRTHDAY'] ?? '';
-        $hobby    = $user_info['MORE_INFO_HTMLENTITIES']['HOBBY'] ?? '';
-        $from     = $user_info['MORE_INFO_HTMLENTITIES']['FROM'] ?? '';
-        $link     = $user_info['MORE_INFO_HTMLENTITIES']['LINK'] ?? '';
-        $bio      = $user_info['MORE_INFO']['BIO'] ?? '';
-    }else{
-        $birthday = '';
-        $hobby    = '';
-        $from     = '';
-        $link     = '';
-        $bio      = '';
-    }
+    $birthday = $user_info['MORE_INFO_HTMLENTITIES']['BIRTHDAY'];
+    $hobby    = $user_info['MORE_INFO_HTMLENTITIES']['HOBBY'];
+    $from     = $user_info['MORE_INFO_HTMLENTITIES']['COME_FROM'];
+    $link     = $user_info['MORE_INFO_HTMLENTITIES']['LINK'];
+    $bio      = $user_info['MORE_INFO']['BIO'];
+
     $online = (USER::is_online($user_info['ID']))? text_r('上線中', '在线','Online'): text_r('離線', '离线','Offline'); //Check online or offline
     $ret = '';
     if($include_edit_area){//change profile picture
         $ret .= '
         <div id="profile">
+            <div id="profile-photo-uploading" class="pseudo-img" style="display:none;">
+                <div class="loader loader-margin"></div>
+            </div>
             <img id="profile-photo" src="'.profile_photo_to_url($user_info['PROFILE']).'">
             <div id="change-profile"><form enctype="multipart/form-data">'.text_r('更換頭像', '更换头像',"Change Profile Picture").'
             <input id="profile-upload" type="file" accept="image/*" onchange="upload_profile_btn_onchange()">
@@ -453,7 +462,7 @@ function render_bio($user_info, $include_edit_area = FALSE){
     }
 
     $ret .= '<div id="bio-list"><ul>';
-    $ret .= '<li><i class="material-icons">message</i><a href="http://localhost/chat/'.$user_info['ID'].'">'.text_r('傳訊息', '传讯息','DM').'</a></li>';
+    $ret .= '<li><i class="material-icons">message</i><a href="http://localhost/chat/'.$user_info['ID'].'">'.text_r('傳訊息', '传讯息','Chat').'</a></li>';
     $ret .= '<li><i class="material-icons">adjust</i>'.$online.'</li>';
     $ret .= ($birthday != '')? '<li><i class="material-icons">cake</i>'.$birthday.'</li>' : '';
     $ret .= ($hobby != '')? '<li><i class="material-icons">sentiment_satisfied</i>'.$hobby.'</li>' : '';
@@ -463,7 +472,7 @@ function render_bio($user_info, $include_edit_area = FALSE){
     $ret .='<div id="bio-content">'.$bio.'</div>';
     if($birthday == '' && $hobby == '' && $from == '' && $link == '' && $bio ==''){
         if($include_edit_area){
-            $ret .= '<center class="comment">'.text_r('尚未完成自我介紹', '尚未完成自我介绍', 'Self-introduction is not edited').'<br>'.text_r('點擊右上方的筆', '点击右上方的笔', 'Press right bottom pencil').'<i class="material-icons" style="font-size:1em;">edit</i>'.text_r('進行編輯', '进行编辑', 'to edit').'</center>';
+            $ret .= '<center class="comment">'.text_r('尚未完成自我介紹', '尚未完成自我介绍', 'Talk more about yourself :)').'<br>'.text_r('點擊右上方的筆', '点击右上方的笔', 'Click the Pen above').'<i class="material-icons" style="font-size:1em;">edit</i>'.text_r('進行編輯', '进行编辑', 'Edit').'</center>';
         }
     }
     $ret .='</div>';
@@ -548,7 +557,7 @@ function render_attachment_list($attachment_list, $editable = FALSE, $snapshot_m
                 $ret .= '<a href="javascript:void(0);" class="del-list-item" onclick="delete_attachment(\''.$v['server_name'].'\')"><i class="material-icons">close</i></a>';
             }
             $ret .='</p>';
-            $ret .= '<audio controls controlsList="nodownload"><source src="'.$v['path'].'">'.text_r('您的瀏覽器不支援 HTML5 播放器', '您的浏览器不支持 HTML5 播放器', 'Your bowser do not support HTML5 player').'</audio>';
+            $ret .= '<audio controls controlsList="nodownload"><source src="'.$v['path'].'">'.text_r('您的瀏覽器不支援 HTML5 播放器', '您的浏览器不支持 HTML5 播放器', 'Your browser does not support HTML5 player').'</audio>';
             $ret .= '</div>';
         }
         $ret.= '</div>';
@@ -564,7 +573,7 @@ function render_attachment_list($attachment_list, $editable = FALSE, $snapshot_m
                 $ret .= '<a href="javascript:void(0);" class="del-list-item" onclick="delete_attachment(\''.$v['server_name'].'\')"><i class="material-icons">close</i></a>';
             }
             $ret .='</p>';
-            $ret .= '<video controls controlsList="nodownload"><source src="'.$v['path'].'">'.text_r('您的瀏覽器不支援 HTML5 播放器', '您的浏览器不支持 HTML5 播放器', 'Your bowser do not support HTML5 player').'</audio>';
+            $ret .= '<video controls controlsList="nodownload"><source src="'.$v['path'].'">'.text_r('您的瀏覽器不支援 HTML5 播放器', '您的浏览器不支持 HTML5 播放器', 'Your browser does not support HTML5 player').'</audio>';
             $ret .= '</div>';
         }
         $ret.= '</div>';
@@ -619,7 +628,7 @@ function render_notice_list($notice, $flags = 0){
     $ret  = '';
 
     if(empty($list) && (($flags & RENDER_FISRT_LIST) == RENDER_FISRT_LIST)){
-        $ret .= '<div class="tip-no-article">'.text_r('尚無通知', '尚无通知', 'No new notice').'</div>';
+        $ret .= '<div class="tip-no-article">'.text_r('尚無通知', '尚无通知', 'No new notification').'</div>';
     }
 
     foreach($list as $index => $row){
@@ -639,7 +648,7 @@ function render_notice_list($notice, $flags = 0){
                 $ret .= text_r('新的按讚', '新的按赞', 'New like');
                 break;
             case Notice::REPLY_TO_YOUR_COMMENT:
-                $ret .= text_r('有人回覆你', '有人回复你', 'New reply');
+                $ret .= text_r('有人回覆你', '有人回复你', 'You have a message');
                 break;
             case Notice::YOUR_ARTICLE_IS_DELETED:
                 break;
@@ -659,7 +668,7 @@ function render_notice_list($notice, $flags = 0){
                 $article_serial = $matches[1];
                 $article_info = Article::get_info_by_serial($article_serial);
 
-                $ret .= text_r('你的貼文', '你的贴文', 'Your post').' "'.$article_info['TITLE'].'" '.text_r(' 有新的留言', ' 有新的留言', 'has new comment');
+                $ret .= text_r('你的貼文', '你的贴文', 'Your post').' "'.$article_info['TITLE'].'" '.text_r(' 有新的留言', ' 有新的留言', 'has new Comment');
                 break;
             case Notice::NEW_LIKE:
                 $article_serial = str_replace('article/', '', $row['LINK']);
@@ -676,7 +685,7 @@ function render_notice_list($notice, $flags = 0){
                 preg_match('/article\/(.*?)\?reply=([0-9]+)\&reply_to=([0-9]+)/', $row['LINK'], $match);
                 $article_serial = $matches[1];
                 $article_info = Article::get_info_by_serial($article_serial);
-                $ret .= '"'.$row['ID_FROM']['NAME'].'" '.text_r('回覆了你在', '回复了你在', 'replied your comment at').' "'.$article_info['TITLE'].text_r(' 的留言', ' 的留言', '');
+                $ret .= '"'.$row['ID_FROM']['NAME'].'" '.text_r('回覆了你在', '回复了你在', 'replied your comment at').' "'.$article_info['TITLE'].text_r(' 的留言', ' 的留言');
                 break;
             case Notice::YOUR_ARTICLE_IS_DELETED:
                 break;

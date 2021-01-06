@@ -114,7 +114,7 @@ class Article{
         // DELETE article_star in article_star
         // DELETE interactive in database article_interactive
         // DELETE reply in database reply
-        // use new Reply->delete_by_article() which can delete reply_interactive simultaneously
+        // use Reply::delete_by_article() which can delete reply_interactive simultaneously
         // DELETE attachments that the article links
         // DELETE notice by link
 
@@ -134,9 +134,7 @@ class Article{
         $res = $db->query('DELETE FROM article_star WHERE `SERIAL` = ?', $serial);
         if(!$res) return FALSE;
 
-        $reply = new Reply;
-        if(!$reply->delete_by_article($serial)) return FALSE;
-
+        if(!Reply::delete_by_article($serial)) return FALSE;
         if(!Notice::delete_by_article($serial)) return FALSE;
 
         File::delete_file_by_article_serial($serial);
@@ -180,41 +178,19 @@ class Article{
     }
 
     // return article_list
-    public function _generate_article_list_by_db_query($sql){
-        $article_list = array();
-        $db = new DB;
-        $res = $db->query($sql);
-        if($res->num_rows > 0){
-            while($row = $res->fetch_assoc()){
-                $row['USER'] = User::get_user_public_info($row['USER']);
-                $inter = new Interactive;
-                $row += $inter->get_article_interactive_num($row['SERIAL']);
-                $reply = new Reply;
-                $row['REPLY_NUM'] = $reply->get_reply_num_by_article_serial($row['SERIAL']);
-                $row['ATTACHMENT'] = SELF::get_attachment($row['SERIAL']);
-
-                array_push($article_list, $row);
-            }
-        }
-
-        return $article_list;
-    }
-
-    // return article_list
     public function _generate_article_list($res){
         $article_list = array();
-        if($res->num_rows > 0){
-            while($row = $res->fetch_assoc()){
-                $row['USER'] = User::get_user_public_info($row['USER']);
-                $inter = new Interactive;
-                $row += $inter->get_article_interactive_num($row['SERIAL']);
-                $reply = new Reply;
-                $row['REPLY_NUM'] = $reply->get_reply_num_by_article_serial($row['SERIAL']);
-                $row['ATTACHMENT'] = SELF::get_attachment($row['SERIAL']);
 
-                array_push($article_list, $row);
-            }
+        foreach($res as $row){
+            $row['USER'] = User::get_user_public_info($row['USER']);
+            $inter = new Interactive;
+            $row += $inter->get_article_interactive_num($row['SERIAL']);
+            $row['REPLY_NUM'] = Reply::get_reply_num_by_article_serial($row['SERIAL']);
+            $row['ATTACHMENT'] = SELF::get_attachment($row['SERIAL']);
+
+            array_push($article_list, $row);
         }
+        console_log("ok2");
 
         return $article_list;
     }

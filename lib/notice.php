@@ -13,9 +13,9 @@ class Notice{
         if(gettype($type) !== 'integer') return FALSE;
 
         $db = new DB;
-        $res = $db->query('INSERT INTO `notice`(`ID_FROM`, `ID_TO`, `TYPE`,
-                           `LINK`, `TIME`) VALUES (?, ?, ?, ?, ?)',
-                            $id_from, $id_to, $type, $link, time());
+        $res = $db->query('INSERT INTO notice(ID_FROM, ID_TO, TYPE,
+                           LINK, `TIME`) VALUES (?, ?, ?, ?, ?)',
+                           $id_from, $id_to, $type, $link, time());
         return (bool)$res;
     }
 
@@ -29,35 +29,37 @@ class Notice{
         return (bool)$res;
     }
 
-    public static function reply($id_from, $reply_serial, $delete = FALSE){
-        $article_serial = (new Reply)->get_reply_by_serial($reply_serial)['ARTICLE_SERIAL'];
+    public static function reply($id_from, $reply_serial, $delete = !SELF::DELETE){
+        $article_serial = Reply::get_reply_by_serial($reply_serial)['ARTICLE_SERIAL'];
         $id_to = Article::get_info_by_serial($article_serial)['USER']['ID'];
         if($id_from == $id_to) return TRUE;
         $link = 'article/'.$article_serial.'?reply='.$reply_serial;
-        if($delete){
+        if($delete === SELF::DELETE){
             return SELF::delete($id_from, $id_to, SELF::COMMENT_TO_YOUR_ARTICLE, $link);
         }
+
         return SELF::add($id_from, $id_to, SELF::COMMENT_TO_YOUR_ARTICLE, $link);
     }
 
-    public static function like($id_from, $article_serial, $cancel = FALSE){
-        $id_to =Article::get_info_by_serial($article_serial)['USER']['ID'];
+    public static function like($id_from, $article_serial, $cancel = !SELF::CANCEL){
+        $id_to = Article::get_info_by_serial($article_serial)['USER']['ID'];
         if($id_from == $id_to) return TRUE;
+
         $link = 'article/'.$article_serial;
-        if($cancel){
+        if($cancel === SELF::CANCEL){
             return SELF::delete($id_from, $id_to, SELF::NEW_LIKE, $link);
         }
         return SELF::add($id_from, $id_to, SELF::NEW_LIKE, $link);
     }
 
-    public static function reply_to_your_comment($id_from, $reply_at, $reply_to_which_floor, $delete = FALSE){
+    public static function reply_to_your_comment($id_from, $reply_at, $reply_to_which_floor, $delete = !SELF::DELETE){
         $reply = new Reply;
-        $article_serial = $reply->get_reply_by_serial($reply_at)['ARTICLE_SERIAL'];
+        $article_serial = Reply::get_reply_by_serial($reply_at)['ARTICLE_SERIAL'];
         $reply_to = $reply->get_reply_serial_by_floor_and_article($reply_to_which_floor, $article_serial);
-        $id_to = $reply->get_reply_by_serial($reply_to)['USER']['ID'];
+        $id_to = Reply::get_reply_by_serial($reply_to)['USER']['ID'];
         if($id_from == $id_to) return TRUE;
         $link = 'article/'.$article_serial.'?reply='.$reply_at.'&reply_to='.$reply_to;
-        if($delete){
+        if($delete === SELF::DELETE){
             return SELF::delete($id_from, $id_to, SELF::REPLY_TO_YOUR_COMMENT, $link);
         }
         return SELF::add($id_from, $id_to, SELF::REPLY_TO_YOUR_COMMENT, $link);
@@ -65,8 +67,8 @@ class Notice{
 
     public static function set_already_read_by_time($notice_serial){
         $db = new DB;
-        $res = $db->query('UPDATE `notice` SET `ALREADY_READ` = 1
-                           WHERE `NOTICE_SERIAL` =?', $notice_serial);
+        $res = $db->query('UPDATE notice SET ALREADY_READ = 1
+                           WHERE NOTICE_SERIAL = ?', $notice_serial);
         return (bool)$res;
     }
 

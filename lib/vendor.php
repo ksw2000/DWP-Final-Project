@@ -1,6 +1,7 @@
 <?php
     include './lib/advance-render.php';
     include './lib/article.php';
+    include './lib/chatbox.php';
     include './lib/classify.php';
     include './lib/db.php';
     include './lib/email.php';

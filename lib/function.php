@@ -5,14 +5,20 @@ function text_r($tw, $cn, $en = null){
     }
 
     global $_SESSION;
+    global $_COOKIE;
+
     if(empty($_SESSION['user_info'])){
-        $lang = 0;
+        if(isset($_COOKIE['lang'])){
+            $lang = $_COOKIE['lang'];
+        }else{
+            $lang = 2;
+        }
     }else{
         $lang = $_SESSION['user_info']['LANGUAGE'];
     }
-    if($lang == 0) return $tw; //If language sets to 0 return as traditional chinese
-    if($lang == 1) return $cn; //If language sets to 1 return as simplified chinese
-    if($lang == 2) return $en; //If language sets to 2 return as english
+    if($lang == 0) return $tw; //If language sets to 0 return as traditional Chinese
+    if($lang == 1) return $cn; //If language sets to 1 return as simplified Chinese
+    if($lang == 2) return $en; //If language sets to 2 return as English
 }
 
 function text($tw, $cn, $en = null){  //get text_r to return the type of text

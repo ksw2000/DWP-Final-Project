@@ -87,10 +87,14 @@ class File{
 
     public static function delete_profile_belong_to($user_id){
         $db = new DB;
-        $res = $db->query('SELECT SERVER_NAME from file WHERE LINK="profile/"
+        $res = $db->query('SELECT SERVER_NAME FROM file WHERE LINK = "profile/"
                            and OWNER = ?', $user_id);
-        $row = $res->fetch_assoc();
-        return SELF::delete($row['SERVER_NAME']);
+
+        $success = TRUE;
+        while($row = $res->fetch_assoc()){
+            $success = $success and SELF::delete($row['SERVER_NAME']);
+        }
+        return $success;
     }
 
     // delete the file which connects to some specify article id
@@ -124,26 +128,32 @@ class FileList{
     }
 
     public function get_all_file_list($file_type = null, $from = null, $num = null){
+        $db = new DB;
         if($from == null) $from = 0;
         if($num == null) $num = 50;
-        if($file_type == null){
-            $sql = 'SELECT `SERVER_NAME`, `FILE_TYPE`, `OWNER`, `LINK`, `UPLOAD_TIME` FROM `file` ORDER BY `UPLOAD_TIME` DESC ';
-        }else{
-            $sql = 'SELECT `SERVER_NAME`, `FILE_TYPE`, `OWNER`, `LINK`, `UPLOAD_TIME` FROM `file` WHERE `FILE_TYPE` = "'.$file_type.'" ORDER BY `UPLOAD_TIME` DESC ';
-        }
 
         $num++;
-        $sql .= "LIMIT $from, $num";
-        $result = $this->_mysqli->query($sql);
-        $num_rows = $result->num_rows;
+        if($file_type == null){
+            $res = $db->query('SELECT SERVER_NAME, FILE_TYPE, OWNER, LINK, UPLOAD_TIME
+                               FROM file ORDER BY UPLOAD_TIME DESC LIMIT ?, ?',
+                               $from, $num);
+        }else{
+            $res = $db->query('SELECT SERVER_NAME, FILE_TYPE, OWNER, LINK, UPLOAD_TIME
+                               FROM file WHRE FILE_TYPE = ? ORDER BY UPLOAD_TIME DESC
+                               LIMIT ?, ?',
+                               $file_type, $from, $num);
+        }
+
+        $num_rows = $res->num_rows;
         $this->_next = ($num_rows == $num)? $from + $num -1 : -1;
 
         $ret = array();
+
         // 再還有下一篇的情況下最後一篇不要印出來
         if($this->_next != -1) --$num_rows;
 
         while($num_rows-- > 0){
-            $row = $result->fetch_assoc();
+            $row = $res->fetch_assoc();
             array_push($ret, $row);
         }
         $this->_file_list = $ret;
@@ -151,8 +161,9 @@ class FileList{
     }
 
     public function find($keyword){
-        $like = '%'.$keyword.'%';
-        $sql  = 'SELECT `SERVER_NAME`, `FILE_TYPE`, `OWNER`, `LINK`, `UPLOAD_TIME` FROM `file` WHERE `SERVER_NAME` LIKE "'.$like.'" LIMIT 0, 50';
+        $db = new DB;
+        $db->query('SELECT SERVER_NAME, FILE_TYPE, OWNER, LINK, UPLOAD_TIME
+                    FROM file WHERE SERVER_NAME LIKE ? LIMIT 0, 50', '%'.$keyword.'%');
         $this->_next = -1;
         $this->_file_list = $this->_mysqli->query($sql);
         return $this->_file_list;

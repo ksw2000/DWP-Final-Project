@@ -88,8 +88,8 @@ class Classify{
         if($modify == SELF::ADD){
             $res = $db->query('INSERT INTO classify(ID, NAME_TW,
                                NAME_CN, NAME_EN)
-                               VALUES(?, ?, ?, ?, ?)', $cid, $name['zh-tw'],
-                               $name['zh-cn'], $name['zh-en']);
+                               VALUES(?, ?, ?, ?)', $cid, $name['zh-tw'],
+                               $name['zh-cn'], $name['en']);
         }else{
             $res = $db->query('UPDATE classify SET NAME_TW = ?, NAME_CN = ?,
                                NAME_EN = ? WHERE ID = ?',
