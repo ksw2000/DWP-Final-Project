@@ -45,14 +45,17 @@ function notice(msg){
 }
 
 function Inbox(){
+    this.lock_continue_load_notice = false;
     $('.continue-load-notice-button').hide('fast');
     var self = this;
     this.next = 0;
     this.load = function(from){
+        self.lock_continue_load_notice = true;
         $.get('/function/load', {
             'type': 'render-inbox',
             'from': from
         }, function(data){
+            console.log(data);
             if(data['Err']){
                 console.log(data['Err']);
             }else{
@@ -69,7 +72,9 @@ function Inbox(){
 
     this.continue_load = function(){
         $('.continue-load-notice-button').hide('fast');
-        self.load(self.next);
+        if(self.lock_continue_load_notice){
+            self.load(self.next);
+        }
     }
 
     this.update_read_time = function(){
@@ -278,4 +283,11 @@ function change_list_view_mode(mode){
     console.log(mode);
     window.view_mode = mode;
     continue_load_article(0);
+}
+
+function pjax(url, title){
+    document.title = title;
+    window.history.pushState({
+        index: url
+    }, title, url);
 }
