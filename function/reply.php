@@ -34,7 +34,7 @@ if($_GET['type'] == 'add'){
         exit();
     }
 
-    $new_serial = $reply->add_reply($_POST['article_serial'], $_SESSION['login_id'], $_POST['tag'], $_POST['content']);
+    $new_serial = Reply::add_reply($_POST['article_serial'], $_SESSION['login_id'], $_POST['tag'], $_POST['content']);
     // if $new_serial is 0, error occurred.
     if($new_serial == 0){
         $data['Err'] = 'Error: Database';
@@ -85,7 +85,7 @@ if($_GET['type'] == 'add'){
         exit();
     }
 
-    $reply_info = (new Reply)->get_reply_by_serial($_POST['serial']);
+    $reply_info = Reply::get_reply_by_serial($_POST['serial']);
     if(empty($reply_info)){
         $data['Err'] = '無該回應';
         echo json_encode($data);

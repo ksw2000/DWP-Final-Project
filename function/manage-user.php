@@ -1,9 +1,9 @@
 <div class="setting-area">
-    <div class="setting-area-title"><?php text('用戶管理', '用户管理')?></div>
+    <div class="setting-area-title"><?php text('用戶管理', '用户管理', 'User Manager')?></div>
     <div class="col">
         <div style="display: flex; align-items: stretch;">
-            <input class="normal" id="find-user" type="text" placeholder="<?php text('以ID或名稱搜尋', '以ID或名称搜寻');?>">
-            <button style="width: 50px; border-radius: 0px; padding: 3px; height: auto;" class="blue" onclick="find_user()"><?php text('搜尋','搜寻')?></button>
+            <input class="normal" id="find-user" type="text" placeholder="<?php text('以ID或名稱搜尋', '以ID或名称搜寻', 'Search by ID or Name');?>">
+            <button style="min-width: 50px; border-radius: 0px; padding: 3px; height: auto;" class="blue" onclick="find_user()"><?php text('搜尋', '搜寻', 'Search')?></button>
         </div>
     </div>
     <div class="col user-list" id="user-list-loading-area"></div>
@@ -81,7 +81,7 @@ function update_user_permission(user_id){
             notice(data['Err']);
             return;
         }else{
-            notice('<?php text('權限更改成功', '权限更改成功')?>');
+            notice('<?php text('權限更改成功', '权限更改成功','Authority Changed')?>');
         }
     }, 'json');
 }

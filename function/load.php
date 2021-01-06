@@ -15,10 +15,7 @@ if($_GET['type'] == 'load-reply'){
         exit();
     }
 
-    $reply = new Reply;
-    $reply_list_item = $reply->get_reply_by_serial($_POST['serial']);
-    $now_client_user_public_info =
-
+    $reply_list_item = Reply::get_reply_by_serial($_POST['serial']);
     $data['Render_reply'] = render_reply($reply_list_item, $_SESSION['user_info']);
     echo json_encode($data);
     exit();
@@ -39,7 +36,6 @@ if($_GET['type'] == 'load-reply'){
     }
 
     $is_star   = isset($_GET['star']);
-    $is_media  = isset($_GET['media']);
     $from      = (empty($_GET['from']))? null : $_GET['from'];
     $num       = (empty($_GET['num']))? null : $_GET['num'];
     $view_mode = (empty($_GET['view_mode']))? 0 : (($_GET['view_mode'] == 'list')? RENDER_LIST_MODE : 0);
@@ -48,14 +44,11 @@ if($_GET['type'] == 'load-reply'){
 
     if($is_star){
         $article->get_article_list_by_userid_star($_GET['user_id'], $from, $num, $query);
-    }else if($is_media){
-        $article->get_article_list_by_userid_attachments($_GET['user_id'], $from, $num);
     }else{
         $article->get_article_list_by_userid($_GET['user_id'], $from, $num, $query);
     }
     $flags  = ($from === null || $from === "0")? RENDER_FISRT_LIST : 0;
     $flags |= ($is_star && $_GET['user_id'] == $_SESSION['login_id'])? RENDER_STAR_MODE : 0;
-    $flags |= ($is_media)? RENDER_MEDIA_MODE : 0;
     $flags |= (!empty($query))? RENDER_QUERY_MODE : 0;
     $flags |= $view_mode;
     $data['Render_result'] = render_article_list($article, $_SESSION['login_id'], $flags);
@@ -108,7 +101,7 @@ if($_GET['type'] == 'load-reply'){
     $data['Info'] = Classify::get_info_by_cid($_GET['cid']);
     echo json_encode($data);
     exit();
-}else if($_GET['type'] == 'load-render-file-list'){
+}else if($_GET['type'] == 'render-file-list'){
     $from = (empty($_GET['from']))? null : $_GET['from'];
     $num  = (empty($_GET['num']))? null : $_GET['num'];
     $find = isset($_GET['q']);
@@ -124,7 +117,7 @@ if($_GET['type'] == 'load-reply'){
     }
 
     if($search_result_is_empty){
-        $data['Render_result'] = text_r('搜尋無結果', '搜寻无结果');
+        $data['Render_result'] = text_r('搜尋無結果', '搜寻无结果','No result');
     }else{
         $data['Render_result'] = render_file_list($fl);
     }
@@ -154,7 +147,7 @@ if($_GET['type'] == 'load-reply'){
         }
     }
     if($user_info->num_rows == 0 && !empty($_GET['q'])){
-        $data['Render_result'] = text_r('搜尋無結果', '搜寻无结果');
+        $data['Render_result'] = text_r('搜尋無結果', '搜寻无结果','No result');
     }else{
         $data['Render_result'] = redner_user_list($ul);
     }
@@ -164,7 +157,7 @@ if($_GET['type'] == 'load-reply'){
 
     echo json_encode($data);
     exit();
-}else if($_GET['type'] == 'load-render-punishment-list'){
+}else if($_GET['type'] == 'render-punishment-list'){
     $from     = (empty($_GET['from']))? null : $_GET['from'];
     $num      = (empty($_GET['num']))? null : $_GET['num'];
 
@@ -198,7 +191,7 @@ if($_GET['type'] == 'load-reply'){
 
     echo json_encode($data);
     exit();
-}else if($_GET['type'] == 'render_online_list'){
+}else if($_GET['type'] == 'render-online-list'){
     $data['Render_result'] = render_online_list();
     echo json_encode($data);
     exit();
@@ -218,11 +211,12 @@ if($_GET['type'] == 'load-reply'){
         echo json_encode($data);
         exit();
     }
-    $data['Render_result'] = render_bio(User::get_user_public_info($_GET['be_visited_user'], TRUE), $_GET['be_visited_user'] == $_SESSION['login_id']);
+    $data['Render_result'] = render_bio(User::get_user_public_info($_GET['be_visited_user'], User::MORE_INFO), $_GET['be_visited_user'] == $_SESSION['login_id']);
     echo json_encode($data);
     exit();
 }else if($_GET['type'] == 'render_global_info'){
     $data['Render_result'] = render_global_info();
+    $data['Title'] = "";
     echo json_encode($data);
     exit();
 }

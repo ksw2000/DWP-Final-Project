@@ -25,7 +25,7 @@ if($_GET['type'] == 'edit_bio'){
     User::update_name($_SESSION['login_id'], $_POST['name']);
     User::update_more_info($_SESSION['login_id'], $_POST['more_info']);
 
-    $user_info = User::get_user_public_info($_SESSION['login_id'], TRUE);
+    $user_info = User::get_user_public_info($_SESSION['login_id'], User::MORE_INFO);
     $data['render'] = render_bio($user_info, TRUE);
     echo json_encode($data);
     exit();
@@ -123,6 +123,7 @@ if($_GET['type'] == 'edit_bio'){
             $lang_code = 1;
             break;
         case 'en':
+        default:
             $lang_code = 2;
             break;
     }
@@ -138,14 +139,33 @@ if($_GET['type'] == 'edit_bio'){
     echo json_encode($data);
     exit();
 }else if($_GET['type'] == 'add_new_user'){
-    if(empty($_POST['id']) || empty($_POST['pwd']) || empty($_POST['name']) || empty($_POST['email']) || empty($_POST['lang'])){
+    if(empty($_POST['id']) || empty($_POST['pwd']) || empty($_POST['pwd2']) || empty($_POST['name']) || empty($_POST['email']) || empty($_POST['lang'])){
         $data['Err'] = 'HTTP POST parameters err';
         echo json_encode($data);
         exit();
     }
 
+    switch($_POST['lang']){
+        case 'zh-tw':
+            $lang_code = 0;
+            break;
+        case 'zh-cn':
+            $lang_code = 1;
+            break;
+        case 'en':
+            $lang_code = 2;
+            break;
+    }
+
+    if(empty($_POST['pwd']) !== empty($_POST['pwd2'])){
+        // Do not change err msg, it is binded to front-end
+        $data['Err'] = 'pwd is not equal pwd2';
+        echo json_encode($data);
+        exit();
+    }
+
     if(User::id_existed($_POST['id'])){
-        $data['Err'] = 'ID existed';    // 已綁定前端
+        $data['Err'] = 'ID existed';
         echo json_encode($data);
         exit();
     }
@@ -162,7 +182,7 @@ if($_GET['type'] == 'edit_bio'){
         exit();
     }
 
-    if(!User::new($_POST['id'], $_POST['pwd'], $_POST['name'], $_POST['email'], $_POST['lang'])){
+    if(!User::new($_POST['id'], $_POST['pwd'], $_POST['name'], $_POST['email'], $lang_code)){
         $data['Err'] = 'Error: Database';
         echo json_encode($data);
         exit();

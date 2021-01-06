@@ -11,19 +11,19 @@ if(empty($_GET['action'])){
 
 if($_GET['action'] == 'publish'){
     if(empty($_POST['title'])){
-        $data['Err'] = text_r('標題不可為空', '标题不可为空');
+        $data['Err'] = text_r('標題不可為空', '标题不可为空','Title is required');
         echo json_encode($data);
         exit();
     }
 
     if($_POST['classify'] == ''){
-        $data['Err'] = text_r('請選擇看板', '请选择看板');
+        $data['Err'] = text_r('請選擇看板', '请选择看板','Please select a forum');
         echo json_encode($data);
         exit();
     }
 
     if(empty($_POST['content']) && empty($_POST['attachment'])){
-        $data['Err'] = text_r('內容不可為空', '内容不可为空');
+        $data['Err'] = text_r('內容不可為空', '内容不可为空','Content could not be empty');
         echo json_encode($data);
         exit();
     }
@@ -34,7 +34,7 @@ if($_GET['action'] == 'publish'){
         // check the article owner
         $artinfo = Article::get_info_by_serial($_POST['serial']);
         if(empty($artinfo) || $artinfo['USER']['ID'] != $_SESSION['login_id']){
-            $data['Err'] = text_r('非文章持有人', '非文章持有人');
+            $data['Err'] = text_r('非文章持有人', '非文章持有人','No authority');
             echo json_encode($data);
             exit();
         }
@@ -44,8 +44,8 @@ if($_GET['action'] == 'publish'){
     // $is_banned (mixed) FALSE or DEADLINE (timestamp)
     $is_banned = Punish::user_is_banned($_SESSION['login_id'], $_POST['classify']);
     if($is_banned !== FALSE){
-        $data['Err']  = text_r('水桶期間不可於此板發文', '水桶期间不可于此板发文');
-        $data['Err'] .=($is_banned != Punish::FOREVER)? '直到 '.render_complete_time($is_banned).text_r(' 結束',' 结束') : text_r('直到管理員或版主允許', '直到管理员或版主允许');
+        $data['Err']  = text_r('水桶期間不可於此板發文', '水桶期间不可于此板发文','Your account is currently banned');
+        $data['Err'] .=($is_banned != Punish::FOREVER)? text_r('直到 ','直到 ','Until ').render_complete_time($is_banned).text_r(' 結束',' 结束',' Ends') : text_r('直到管理員或版主允許', '直到管理员或版主允许','Contact Administrator to get unbanned');
 
         echo json_encode($data);
         exit();

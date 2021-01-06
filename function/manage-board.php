@@ -1,26 +1,29 @@
 <div class="setting-area" id="manage-board">
-    <div class="setting-area-title"><?php text('新增看板', '添加看板')?></div>
+    <div class="setting-area-title"><?php text('新增看板', '添加看板','New Forum')?></div>
     <div class="col">
-        <input class="normal required" id="board-id" type="text" placeholder="<?php text('輸入英文', '输入英文')?>ID e.g. music">
-        <span class="comment" style="font-size: 0.88em;">英文 ID <?php text('在新增看板後即無法更改', '在添加看板后即无法更改')?></span>
+        <input class="normal required" id="board-id" type="text" placeholder="<?php text('輸入英文', '输入英文','Name in English')?>ID e.g. music">
+        <span class="comment" style="font-size: 0.88em;"><?php text('英文 ID 在新增看板後即無法更改', '英文 ID 在添加看板后即无法更改','Your Forum ID will no longer editable after submit')?></span>
     </div>
     <div class="col">
-        <input class="normal required" id="board-name-t" type="text" placeholder="<?php text('輸入繁中名稱', '输入繁中名称')?> e.g. 音樂討論板">
+        <input class="normal required" id="board-name-t" type="text" placeholder="<?php text('輸入繁中名稱', '输入繁中名称','Name in Traditional Chinese')?> e.g. 表特板">
     </div>
     <div class="col">
-        <input class="normal required" id="board-name-s" type="text" placeholder="<?php text('輸入簡中名稱', '输入简中名称')?> e.g. 音乐讨论板">
+        <input class="normal required" id="board-name-s" type="text" placeholder="<?php text('輸入簡中名稱', '输入简中名称','Name in Simplified Chinese')?> e.g. 表特板">
+    </div>
+    <div class="col">
+        <input class="normal required" id="board-name-en" type="text" placeholder="<?php text('輸入英文名稱', '输入英文名称','Name in English')?> e.g. Beauty">
     </div>
     <div class="col">
         <div style="display: flex; align-items: stretch;">
             <input class="normal" id="input-add-moderator-list" type="text" placeholder="指定板主(ID)" onkeydown="key_enter_add_moderator(this, '#input-add-moderator-list', '#ul-add-moderator-list')">
-            <button style="width: 50px; border-radius: 0px; padding: 3px; height: auto;" class="blue" onclick="add_moderator('#input-add-moderator-list', '#ul-add-moderator-list')"><?php text('新增','添加')?></button>
+            <button style="width: 50px; border-radius: 0px; padding: 3px; height: auto;" class="blue" onclick="add_moderator('#input-add-moderator-list', '#ul-add-moderator-list')"><?php text('新增','添加','New')?></button>
         </div>
         <ul class="horizontal-list" id="ul-add-moderator-list"></ul>
-        <span class="comment" style="font-size: 0.88em;"><?php text('管理員權限高於板主，僅有一般成員成被指定為板主。板主能刪除板上的文章、留言，及水桶', '管理员权限高于板主，仅有一般成员成被指定为板主。板主能删除板上的文章、留言，及水桶')?></span>
+        <span class="comment" style="font-size: 0.88em;"><?php text('管理員權限高於板主，僅有一般成員成被指定為板主。板主能刪除板上的文章、留言，及水桶', '管理员权限高于板主，仅有一般成员成被指定为板主。板主能删除板上的文章、留言，及水桶','The authority of Administrator is higher than Moderator, only Member will be promoted as Moderator. Moderator has the authority to delete,comment and ban in a forum')?></span>
     </div>
     <div class="col">
-        <button class="blue center" onclick="add_new_board(this, '#real-add-new-board-butoon')"><?php text('新增看板', '添加看板')?></button>
-        <button class="blue center" id="real-add-new-board-butoon" style="display: none;" onclick="real_add_new_board()"><?php text('確認新增看板', '确认添加看板')?></button>
+        <button class="blue center" onclick="add_new_board(this, '#real-add-new-board-butoon')"><?php text('新增看板', '添加看板','New Forum')?></button>
+        <button class="blue center" id="real-add-new-board-butoon" style="display: none;" onclick="real_add_new_board()"><?php text('確認新增看板', '确认添加看板','Confirm')?></button>
     </div>
 </div>
 <div class="setting-area">
@@ -29,23 +32,23 @@
 </div>
 <div class="setting-area" id="setting-board-area" style="display: none;">
     <p><span>看板 ID </span><span id="modify-board-id"></span></p>
-    <p><?php text('修改繁中名稱', '修改繁中名称', 'Chinese name(traditional)')?></p>
+    <p><?php text('修改繁中名稱', '修改繁中名称', 'Chinese Name(Traditional)')?></p>
     <input class="normal required" id="modify-board-name-t" type="text">
-    <p><?php text('修改簡中名稱', '修改简中名称', 'Chinese name(simplify)')?></p>
+    <p><?php text('修改簡中名稱', '修改简中名称', 'Chinese Name(Simplify)')?></p>
     <input class="normal required" id="modify-board-name-s" type="text">
-    <p><?php text('修改英文名稱', '修改英文名称', 'English name')?></p>
+    <p><?php text('修改英文名稱', '修改英文名称', 'English NName')?></p>
     <input class="normal required" id="modify-board-name-en" type="text">
-    <p><?php text('指定板主' , '指定板主')?></p>
+    <p><?php text('指定板主' , '指定板主','Specific Moderator')?></p>
     <div style="display: flex; align-items: stretch;">
         <input class="normal" id="input-modify-moderator-list" type="text" placeholder="指定板主(ID)" onkeydown="key_enter_add_moderator(this, '#input-modify-moderator-list', '#ul-modify-moderator-list')">
-        <button style="width: 50px; border-radius: 0px; padding: 3px; height: auto;" class="blue" onclick="add_moderator('#input-modify-moderator-list', '#ul-modify-moderator-list')"><?php text('新增', '添加')?></button>
+        <button style="width: 50px; border-radius: 0px; padding: 3px; height: auto;" class="blue" onclick="add_moderator('#input-modify-moderator-list', '#ul-modify-moderator-list')"><?php text('新增', '添加','Insert')?></button>
     </div>
     <ul class="horizontal-list" id="ul-modify-moderator-list"></ul>
     <center style="margin: 10px 0px;">
-        <button class="blue" onclick="delete_board()" id="delete-board-button"><?php text('刪除看板', '删除看板')?></button>
+        <button class="blue" onclick="delete_board()" id="delete-board-button"><?php text('刪除看板', '删除看板','Delete Forum')?></button>
         <button class="blue" onclick="modify_board()">修改</button>
     </center>
-    <span class="comment"><?php text('因安全性問題，僅允許刪除文章數為空的看板，若要刪除有文章的看板請聯絡工程師', '因安全性问题，仅允许删除文章数为空的看板，若要删除有文章的看板请联系程序员')?></span>
+    <span class="comment"><?php text('因安全性問題，僅允許刪除文章數為空的看板，若要刪除有文章的看板請聯絡工程師', '因安全性问题，仅允许删除文章数为空的看板，若要删除有文章的看板请联系程序员','Due to Security issues, Only "Empty Forum" is Deletable,if there is any forum wish to be deleted, Please contact the Programmer')?></span>
 </div>
 
 <script>
@@ -165,11 +168,11 @@ function real_add_new_board(){
         'board_id' : $("#manage-board #board-id").val(),
         'board_name' : {
             'zh-tw' : $("#manage-board #board-name-t").val(),
-            'zh-cn' : $("#manage-board #board-name-s").val()
+            'zh-cn' : $("#manage-board #board-name-s").val(),
+            'en' : $("#manage-board #board-name-en").val()
         },
         'moderator_list' : JSON.stringify(window.moderator_candidate['#input-add-moderator-list'])
     }, function(data){
-        console.log(data);
         if(data['Err']){
             console.log(data['Err']);
             notice(data['Err']);
@@ -190,7 +193,7 @@ function delete_board(id){
             return;
         }else{
             refresh_board_list();
-            notice('<?php text('看板刪除成功', '看板删除成功')?>');
+            notice('<?php text('看板刪除成功', '看板删除成功','Article Deleted')?>');
         }
     }, 'json');
 }
@@ -240,7 +243,7 @@ function add_moderator(input_obj, list_obj){
         var len = (window.moderator_candidate[input_obj])? window.moderator_candidate[input_obj].length : 0;
         for(var i=0; i<len; i++){
             if(id === window.moderator_candidate[input_obj][i]){
-                notice("<?php text('已在清單內', '已在清单内')?>");
+                notice("<?php text('已在清單內', '已在清单内','Already added to the List')?>");
                 return;
             }
         }
@@ -252,10 +255,10 @@ function add_moderator(input_obj, list_obj){
         if(data['Err']){
             console.log(data['Err']);
             if(data['Err'] === 'Is manager'){
-                notice("<?php text('該候選人是管理員等級，不適用板主', '该候选人是管理员等级，不适用板主')?>");
+                notice("<?php text('該候選人是管理員等級，不適用板主', '该候选人是管理员等级，不适用板主','Current user is Administrator, Not suitable as Moderator')?>");
                 return;
             }else if(data['Err'] === 'User not found'){
-                notice("<?php text('找不到該 ID', '找不到该 ID')?>");
+                notice("<?php text('找不到該 ID', '找不到该 ID',' ID not found')?>");
                 return;
             }
             notice(data['Err']);

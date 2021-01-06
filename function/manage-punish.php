@@ -4,13 +4,13 @@
     $is_moderator = ($cid_managed_by_moderator != null)? TRUE : FALSE;
 ?>
 <div class="setting-area">
-    <div class="setting-area-title">水桶</div>
+    <div class="setting-area-title"><?php echo text_r('水桶','水桶','Prohibition');?></div>
     <div class="col">
-        <span><?php text('用戶', '用户')?>ID：</span><br>
-        <input type="text" class="normal" placeholder="<?php text('輸入','输入')?>ID" id="punish-id">
+        <span><?php text('用戶', '用户','User')?>ID：</span><br>
+        <input type="text" class="normal" placeholder="<?php text('輸入','输入','Enter ')?>ID" id="punish-id">
     </div>
     <div class="col">
-        <span><?php text('選擇看板', '选择看板')?>：</span><br>
+        <span><?php text('選擇看板', '选择看板','Select Forum')?>：</span><br>
         <select class="normal" id="punish-board">
         <?php
             $classify_list = Classify::get_list();
@@ -30,21 +30,21 @@
         </select>
     </div>
     <div class="col">
-        <span><?php text('結束日期', '结束日期')?>：</span><br>
+        <span><?php text('結束日期', '结束日期', 'Suspension End Date')?>：</span><br>
         <select class="normal" id="punish-day">
-            <option value="1">1天</option>
-            <option value="3">3天</option>
-            <option value="5">5天</option>
-            <option value="7">7天</option>
-            <option value="30">30天</option>
-            <option value="60">60天</option>
-            <option value="90">90天</option>
-            <option value="forever"><?php text('直到解除封鎖', '直到解除封锁')?></option>
+            <option value="1"><?php echo text_r('1天','1天','1 Day');?></option>
+            <option value="3"><?php echo text_r('3天','3天','3 Days');?></option>
+            <option value="5"><?php echo text_r('5天','5天','5 Day');?></option>
+            <option value="7"><?php echo text_r('7天','7天','1 Week');?></option>
+            <option value="30"><?php echo text_r('30天','30天','1 Month');?></option>
+            <option value="60"><?php echo text_r('60天','60天','2 Months');?></option>
+            <option value="90"><?php echo text_r('90天','90天','3 Months');?></option>
+            <option value="forever"><?php text('直到解除封鎖', '直到解除封锁','Banned permanently')?></option>
         </select>
         <input class="normal" type="datetime-local" id="punish-date" style="display:none;">
     </div>
     <div class="col">
-        <button class="blue center" onclick="add_punish()">送出</button>
+        <button class="blue center" onclick="add_punish()"><?php echo text_r('送出','送出','Confirm');?></button>
     </div>
     <div class="col" id="punishment-list-loading-area">
         <?php
@@ -64,7 +64,7 @@ window.lock_continue_load_punishment = false;
 function continue_load_punishment_list(){
     window.lock_continue_load_punishment = true;
     $('.continue-load-punushment-list-button').hide('fast');
-    $.get('/function/load?type=load-render-punishment-list', {
+    $.get('/function/load?type=render-punishment-list', {
         'from': window.next_punishment_list
     }, function(data){
         if(data['Err']){
@@ -80,7 +80,7 @@ function continue_load_punishment_list(){
 }
 
 function reload_punishment_list(){
-    $.get('/function/load?type=load-render-punishment-list', {
+    $.get('/function/load?type=render-punishment-list', {
         'from': 0
     }, function(data){
         if(data['Err']){
@@ -114,7 +114,7 @@ function add_punish(){
         if(data['Err']){
             console.log(data['Err']);
             if(data['Err']==='User not found'){
-                notice('@' + id + ' <?php text('用戶不存在', '用户不存在')?>');
+                notice('@' + id + ' <?php text('用戶不存在', '用户不存在','User doesn\'t exists')?>');
             }else{
                 notice(data['Err']);
             }

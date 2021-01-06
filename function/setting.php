@@ -98,13 +98,13 @@ if($_GET['type'] == 'add_new_board' || $_GET['type'] == 'modify_board'){
         exit();
     }
 
-    if(empty($_POST['server_name']) || empty($_POST['file_type'])){
+    if(empty($_POST['server_name'])){
         $data['Err'] = 'HTTP POST parameters err';
         echo json_encode($data);
         exit();
     }
 
-    File::delete_by_name_and_type($_POST['server_name'], $_POST['file_type']);
+    File::delete($_POST['server_name']);
     echo json_encode($data);
     exit();
 }else if($_GET['type'] == 'update_user_permission'){
