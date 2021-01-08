@@ -8,7 +8,6 @@ $chat_check=false;
 (!empty($_POST['time_to_chat']))?$time_to_chat=$_POST['time_to_chat']:$time_to_chat='';
 
 (!empty($_GET['chat_check']))?$chat_check=$_GET['chat_check']:$chat_check='';
-(!empty($_GET['chat_check_new']))?$chat_check_new=$_GET['chat_check_new']:$chat_check_new='';
 (!empty($_GET['find_ID']))?$find_ID=$_GET['find_ID']:$find_ID='';
 (!empty($_GET['find_target']))?$find_target=$_GET['find_target']:$find_target='';
 
@@ -20,11 +19,11 @@ if($time_to_chat)
 }
 else if($chat_check)
 {
-    echo get_msg($chat_check_new,$find_ID,$find_target);
+    echo get_msg($find_ID,$find_target);
 }
 
 
-function get_msg($chat_check_new,$ID,$target)
+function get_msg($ID,$target)
 {
     $db=new DB;
     $chatbox=new Chatbox;

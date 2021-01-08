@@ -28,7 +28,7 @@
             <?php endif;?>
             <?php if($is_manager):?>
             <div class="tab-list" data-tab="manage-user"><a href="javascript: void(0);" onclick="change_tab('manage-user');"><?php text('用戶管理','用户管理','User Manager')?></a></div>
-            <div class="tab-list" data-tab="manage-board"><a href="javascript: void(0);" onclick="change_tab('manage-board');"><?php text('看板管理','看板管理','Classify Manager')?></a></div>
+            <div class="tab-list" data-tab="manage-board"><a href="javascript: void(0);" onclick="change_tab('manage-board');"><?php text('看板管理','看板管理','Forum Manager')?></a></div>
             <div class="tab-list" data-tab="manage-file"><a href="javascript: void(0);" onclick="change_tab('manage-file');"><?php text('檔案管理','文件管理','File Manager')?></a></div>
             <?php endif;?>
         </div>
@@ -66,9 +66,9 @@
                         <?php
                             $lang = $_SESSION['user_info']['LANGUAGE'];
                         ?>
-                        <option value="zh-tw"<?php if($lang===0) echo " selected"?>>繁體中文</option>
-                        <option value="zh-cn"<?php if($lang===1) echo " selected"?>>简体中文</option>
-                        <option value="en"<?php if($lang===2) echo " selected"?>>English</option>
+                        <option value="zh-tw"<?php if($lang == 0) echo " selected"?>>繁體中文</option>
+                        <option value="zh-cn"<?php if($lang == 1) echo " selected"?>>简体中文</option>
+                        <option value="en"<?php if($lang == 2) echo " selected"?>>English</option>
                     </select>
                 </div>
                 <div class="col" style="text-align: right;">
@@ -87,7 +87,7 @@
 
             <?php if($is_manager):?>
             <div class="setting-area">
-                <div class="setting-area-title"><?php text('潛水模式', '潜水模式', 'Diving Mode')?></div>
+                <div class="setting-area-title"><?php text('潛水模式', '潜水模式', 'Inactive Mode')?></div>
                 <div class="col">
                     <div class="onoffswitch">
                         <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox"
@@ -301,9 +301,9 @@ function switch_diving_mode(o){
             return;
         }else{
             if(diving){
-                notice('<?php text('潛水模式已開啟', '潜水模式已激活','Prohibition Mode Activated')?>');
+                notice('<?php text('潛水模式已開啟', '潜水模式已激活', 'Inactive Mode Activated')?>');
             }else{
-                notice('<?php text('潛水模式已關閉', '潜水模式已关闭','Prohibition Mode Deactivated')?>');
+                notice('<?php text('潛水模式已關閉', '潜水模式已关闭', 'Inactive Mode Deactivated')?>');
             }
         }
     }, 'json');

@@ -1,7 +1,5 @@
 <?php
 class Chatbox{
-    public $query;
-    public $msg_list;
 
     public function send_msg($ID,$text,$time,$target){
         $db=new DB;

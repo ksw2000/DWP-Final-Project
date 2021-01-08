@@ -3,7 +3,7 @@
 ?>
     <script>
     window.onload=setInterval(get_msg,500);
-    
+
     Date.prototype.today = function ()
     {
         return ((this.getDate() < 10)?"0":"") + this.getDate() +"/"+(((this.getMonth()+1) < 10)?"0":"") + (this.getMonth()+1) +"/"+ this.getFullYear();
@@ -59,7 +59,7 @@
     {
         var data={};
         data.chat_check=true;
-        data.chat_check_new=(document.getElementsByClassName('left').length=='')?0:document.getElementsByClassName('left').length;
+        //data.chat_check_new=(document.getElementsByClassName('left').length=='')?0:document.getElementsByClassName('left').length;
         data.find_ID='<?php echo $_SESSION['login_id']?>';
         data.find_target='<?php echo $be_visited_user?>';
         $.get('/function/chatbox',data,function(data)
@@ -75,7 +75,7 @@
     </script>
 
 <div id="wrapper">
-    <div id="wrapper-flex">
+    <div id="wrapper-flex" style="padding-top: 20px;">
         <div id="bio-container">
         <?php echo render_bio($user_info, $be_visited_user == $_SESSION['login_id']);?>
         </div>

@@ -17,7 +17,7 @@
 ?>
 <!-- navigation header -->
 <div id="bookmark"> <!-- Device size bigger than 700px -->
-    <div class="bigger-than-700px bookmark-list<?php if($tab == 'user') echo ' now';?>" data-tab="user"><a href="/user" onclick="goto_user_by_user_id('<?php echo $_SESSINO['login_id']?>'); return false;"><?php text('用戶', '用戶', 'User');?></a></div>
+    <div class="bigger-than-700px bookmark-list<?php if($tab == 'user') echo ' now';?>" data-tab="user"><a href="/user" onclick="goto_user_by_user_id('<?php echo $_SESSION['login_id']?>'); return false;"><?php text('用戶', '用戶', 'User');?></a></div>
     <div class="bigger-than-700px bookmark-list<?php if($tab == 'all') echo ' now';?>" data-tab="all"><a href="/" onclick="goto_index_by_tab('all'); return false;"><?php text('全部看板', '全部看板', 'All')?></a></div>
     <?php
         foreach($classify_list as $v){

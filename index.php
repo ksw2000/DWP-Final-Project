@@ -60,7 +60,7 @@ if($url_id == 'private_assets'){
                     $type .= $ext;
             }
             header('Content-type: '.$type);
-            header('Cache-Control: private, max-age=8640000');
+            header('Cache-Control: public, max-age=8640000');
             readfile($path);
             exit();
             break;
@@ -78,7 +78,7 @@ if($url_id == 'private_assets'){
             header('Content-Disposition: filename="'.basename($path));
             header('Content-Transfer-Encoding: binary');
             header('X-Pad: avoid browser bug');
-            header('Cache-Control: private');
+            header('Cache-Control: public');
             header('Accept-ranges: bytes');
             readfile($path);
             exit();

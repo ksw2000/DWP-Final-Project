@@ -131,15 +131,25 @@
 <!DOCTYPE html>
 <html lang="zh-tw" style="height:100%;">
 <head>
-    <title>音樂論壇</title>
-    <!--<link rel="shortcut icon" type="image/x-icon" href="/img/favicon.png">-->
+    <title>龍哥論壇</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="/assets/css/for-login.css?<?php echo time();?>">
-    <!--<link rel="shortcut icon" href="/favicon.ico">-->
+    <link rel="shortcut icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="theme-color" content="#e8e8e8"/>
     <script src="/assets/js/jquery-3.5.1.js"></script>
+    <script>
+    function change_lang(lang){
+        switch (lang) {
+            case 'zh-tw': lang = 0; break;
+            case 'zh-cn': lang = 1; break;
+            case 'en': lang = 2; break;
+        }
+        document.cookie = "lang="+lang;
+        location.reload();
+    }
+    </script>
 </head>
 <body>
 <div id="notice">
@@ -149,12 +159,12 @@
 <div id="login-parent">
     <div id="login">
     <?php if($normal):?>
-        <h4 style="text-align:center;font-size:50px;">登入</h4>
+        <h4 style="text-align:center;font-size:50px;"><?php text('龍哥論壇', '龍哥論壇', 'Longer Forum')?></h4>
         <div class="col">
-            <input class="light" autocomplete="off" type="text" placeholder="帳號" id="id" onkeydown="key_enter(this, login)" autofocus/>
+            <input class="light" autocomplete="off" type="text" placeholder="<?php text('帳號','帳號','Username')?>" id="id" onkeydown="key_enter(this, login)" autofocus/>
         </div>
         <div class="col">
-            <input class="light" autocomplete="off" type="password" placeholder="密碼" id="pwd" onkeydown="key_enter(this, login)"/>
+            <input class="light" autocomplete="off" type="password" placeholder="<?php text('密碼','密碼','Password')?>" id="pwd" onkeydown="key_enter(this, login)"/>
         </div>
         <div class="col">
             <span id="error"></span>
@@ -173,41 +183,46 @@
             </div>
         </div>
         <div class="col">
-            <center><a class="waves-effect waves-light btn" onclick="login()">登入</a></center>
+            <center><a class="waves-effect waves-light btn" onclick="login()"><?php text('登入','登入','Login')?></a></center>
         </div>
         <div class="col">
             <div class="block">
-                <a class="light" href="/login?forget">忘記密碼？</a>
-                <a class="light" href="/login?reg">新增帳號</a>
+                <a class="light" href="/login?forget"><?php text('忘記密碼？','忘記密碼','Forget Password?')?></a> | 
+                <a class="light" href="/login?reg"><?php text('新增帳號','新增帳號','Create a new account')?></a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="block">
+                <a class="light" href="javascript:void(0)" onclick="change_lang('<?php text('en', 'en', 'zh-tw')?>')"><?php text('English','English','中文')?></a>
             </div>
         </div>
     <?php elseif($reg):?> <!-- Create a new account -->
         <div id="add-new-user">
             <div class="col">
-                <span style="font-size: 50px; margin-left: 5%;">建立新帳號</span>
+                <span style="font-size: 50px; margin-left: 5%;"><?php text('建立新帳號','建立新帳號','Create a New Account')?></span>
             </div>
             <div class="col">
-                <label for="add-user-id">帳號</label>
+                <label for="add-user-id"><?php text('帳號','帳號','Username')?></label>
                 <input class="light required" id="add-user-id" type="text" placeholder="4 ~ 30" autofocus>
             </div>
             <div class="col">
-                <label for="add-user-pwd">密碼</label>
+                <label for="add-user-pwd"><?php text('密碼','密碼','Password')?></label>
                 <input class="light required" id="add-user-pwd" autocomplete="off" type="password" placeholder="8 ~ 30">
             </div>
             <div class="col">
-                <label for="add-user-pwd-2">確認密碼</label>
+                <label for="add-user-pwd-2"><?php text('確認密碼','確認密碼','Re-type Password')?></label>
                 <input class="light required" id="add-user-pwd-2" autocomplete="off" type="password">
             </div>
             <div class="col">
-                <label for="add-user-name">暱稱</label>
+                <label for="add-user-name"><?php text('暱稱','暱稱','Nickname')?></label>
                 <input class="light required" id="add-user-name" type="text" placeholder="">
             </div>
             <div class="col">
-                <label for="add-user-email">電子郵件</label>
+                <label for="add-user-email"><?php text('電子郵件','電子郵件','Email')?></label>
                 <input class="light required" id="add-user-email" type="email" placeholder="sakura@example.com">
             </div>
             <div class="col">
-                <label for="select-preset-language">預設語言</label>
+                <label for="select-preset-language"><?php text('預設語言','預設語言','Language')?></label>
                 <div class="col">
                 <select id="select-preset-language" class="browser-default">
                     <option value="zh-tw">繁體中文</option>
@@ -217,16 +232,16 @@
                 </div>
             </div>
             <div class="col">
-                <center><a class="waves-effect waves-light btn" onclick="add_new_user()">註冊</a></center>
+                <center><a class="waves-effect waves-light btn" onclick="add_new_user()"><?php text('註冊','註冊','Sign Up')?></a></center>
             </div>
             <div class='col'>
-                <center><div class="block"><a href="/login" class="light">返回首頁</a></div></center>
+                <center><div class="block"><a href="/login" class="light"><?php text('返回首頁','返回首頁','Back to Login Page')?></a></div></center>
             </div>
         </div>
     <?php elseif($forget_pwd):?>
-        <h4 style="text-align:center;">忘記密碼？</h4>
+        <h4 style="text-align:center;"><?php text('忘記密碼？','忘記密碼？','Forget Password?')?></h4>
         <div class="col">
-            <input class="light" autocomplete="off" type="text" placeholder="帳號 或 Email" id="id_or_email" onkeydown="key_enter(this, forget_pwd)" autofocus/>
+            <input class="light" autocomplete="off" type="text" placeholder="<?php text('帳號 或 Email','帳號 或 Email','Username or Email')?>" id="id_or_email" onkeydown="key_enter(this, forget_pwd)" autofocus/>
         </div>
         <div class="col">
             <span id="error"></span>
@@ -245,23 +260,23 @@
             </div>
         </div>
         <div class="col">
-            <center><a class="waves-effect waves-light btn" onclick="forget_pwd()">要求寄發驗證信</a></center>
+            <center><a class="waves-effect waves-light btn" onclick="forget_pwd()"><?php text('要求寄發驗證信','要求寄發驗證信','Send Verification Code')?></a></center>
         </div>
         <div class="col">
-            <div class="block"><a class="light" href="/login">返回登入頁</a></div>
+            <div class="block"><a class="light" href="/login"><?php text('返回登入頁','返回登入頁','Back to Login Page')?></a></div>
         </div>
     <?php elseif($wait_email):?>
-        <h4 style="text-align:center;">請至郵件箱等候驗證信！</h4>
+        <h4 style="text-align:center;"><?php text('請至郵件箱等候驗證信！','請至郵件箱等候驗證信！','Verication code has sent to Your mailbox!')?></h4>
         <div class="col">
-            <center><a class="light" href="/login?forget">重新寄發</a> | <a class="light" href="/login">返回登入頁</a></center>
+            <center><a class="light" href="/login?forget"><?php text('重新寄發','重新寄發','Resend')?></a> | <a class="light" href="/login"><?php text('返回登入頁','返回登入頁','Back to Login Page')?></a></center>
         </div>
     <?php elseif($reset_pwd):?>
-        <h4 style="text-align:center;">輸入新密碼！</h4>
+        <h4 style="text-align:center;"><?php text('輸入新密碼！','輸入新密碼！','Please enter your new password')?></h4>
         <div class="col">
-            <input class="light" autocomplete="off" type="password" placeholder="新密碼" id="new-pwd" onkeydown="key_enter(this, reset_pwd)"/>
+            <input class="light" autocomplete="off" type="password" placeholder="<?php text('新密碼','新密碼','New Password')?>" id="new-pwd" onkeydown="key_enter(this, reset_pwd)"/>
         </div>
         <div class="col">
-            <input class="light" autocomplete="off" type="password" placeholder="確認新密碼" id="retype-pwd" onkeydown="key_enter(this, reset_pwd)"/>
+            <input class="light" autocomplete="off" type="password" placeholder="<?php text('確認新密碼','確認新密碼','Confirm Password')?>" id="retype-pwd" onkeydown="key_enter(this, reset_pwd)"/>
         </div>
         <div class="col">
             <span id="error"></span>
@@ -280,18 +295,18 @@
             </div>
         </div>
         <div class="col">
-            <center><a class="waves-effect waves-light btn" onclick="reset_pwd()">更改密碼</a></center>
+            <center><a class="waves-effect waves-light btn" onclick="reset_pwd()"><?php text('更改密碼','更改密碼','Change Password')?>/a></center>
         </div>
         <div class="col">
-            <center><a class="light" href="/login?forget">重新寄發</a> | <a class="light" href="/login">返回登入頁</a></center>
+            <center><a class="light" href="/login?forget"><?php text('重新寄發','重新寄發','Resend')?></a> | <a class="light" href="/login"><?php text('返回登入頁','返回登入頁','Back to Login Page')?></a></center>
         </div>
     <?php elseif($change_email):?><!--change email-->
-        <h4 style="text-align:center;">欲變更電郵請輸入密碼！</h4>
+        <h4 style="text-align:center;"><?php text('欲變更電郵請輸入密碼！','欲變更電郵請輸入密碼！','Please enter your password to change Email')?></h4>
         <div class="col">
             <p style="text-align: center;"><?php echo $user_info['EMAIL'].' -> '.$new_email;?></p>
         </div>
         <div class="col">
-            <input class="light" autocomplete="off" type="password" placeholder="密碼" id="pwd" onkeydown="key_enter(this, ensure_change_email)"/>
+            <input class="light" autocomplete="off" type="password" placeholder="<?text('密碼','密碼','Password')?>" id="pwd" onkeydown="key_enter(this, ensure_change_email)"/>
         </div>
         <div class="col">
             <span id="error"></span>
@@ -310,7 +325,7 @@
             </div>
         </div>
         <div class="col">
-            <center><a class="waves-effect waves-light btn" onclick="ensure_change_email()">更改密碼</a></center>
+            <center><a class="waves-effect waves-light btn" onclick="ensure_change_email()"><?php text('更改密碼','更改密碼','Change Password')?></a></center>
         </div>
     <?php endif;?>
 
@@ -359,7 +374,7 @@ function forget_pwd(){
     var id_or_email = $("#login #id_or_email").val();
     if(id_or_email == ''){
         $("#loading").fadeOut(function(){
-            $("#login #error").text("欄位不可為空！");
+            $("#login #error").text("<?php text('欄位不可為空！','欄位不可為空！','Field cannot be empty')?>");
         });
         window.lock = false;
         return;

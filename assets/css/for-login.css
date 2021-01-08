@@ -134,12 +134,13 @@ div.block{
   text-align:center;
 }
 
-div.block a{
-  display:inline-block;
-  transition:.3s;
+a.light{
+  display: inline-block;
+  font-weight: normal;
+  transition: color 300ms;
 }
 
-div.block a{
+a.light{
   color: #9fcde4;
 }
 

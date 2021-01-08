@@ -190,7 +190,6 @@ class Article{
 
             array_push($article_list, $row);
         }
-        console_log("ok2");
 
         return $article_list;
     }
@@ -208,11 +207,11 @@ class Article{
                                and (TITLE LIKE ? or CONTENT LIKE ?)
                                ORDER BY PUBLISH DESC LIMIT ?, ?',
                                $user_id, "%$q%", "%$q%",
-                               $from, $num);
+                               (int)$from, (int)$num);
         }else{
             $res = $db->query('SELECT * FROM article WHERE USER = ?
                                ORDER BY PUBLISH DESC LIMIT ?, ?',
-                               $user_id, $from, $num);
+                               $user_id, (int)$from, (int)$num);
         }
 
         if($step) goto record;
@@ -245,12 +244,12 @@ class Article{
                                ORDER BY b.TIME DESC LIMIT ?, ?',
                                $user_id,
                                "%$q%", "%$q%",
-                               $from, $num);
+                               (int)$from, (int)$num);
         }else{
             $res = $db->query('SELECT a.* FROM article as a, article_star as b
                                WHERE b.USER = ? and a.SERIAL = b.SERIAL
                                ORDER BY b.TIME DESC LIMIT ?, ?',
-                               $user_id, $from, $num);
+                               $user_id, (int)$from, (int)$num);
         }
 
         if($step) goto record;
@@ -287,13 +286,13 @@ class Article{
                                    LIMIT ?, ?',
                                    $classify_id,
                                    "%$q%", "%$q%",
-                                   $from, $num);
+                                   (int)$from, (int)$num);
             }else{
                 $res = $db->query('SELECT * FROM article
                                    WHERE PUBLISH <> 0 and CLASSIFY = ?
                                    ORDER BY TOP DESC, PUBLISH DESC
                                    LIMIT ?, ?',
-                                   $classify_id, $from, $num);
+                                   $classify_id, (int)$from, (int)$num);
             }
         }else{
             if(!empty($q)){
@@ -302,12 +301,12 @@ class Article{
                                    and (TITLE LIKE ? or CONTENT LIKE ?)
                                    ORDER BY PUBLISH DESC LIMIT ?, ?',
                                    "%$q%", "%$q%",
-                                   $from, $num);
+                                   (int)$from, (int)$num);
             }else{
                 $res = $db->query('SELECT * FROM article
                                    WHERE PUBLISH <> 0
                                    ORDER BY PUBLISH DESC LIMIT ?, ?',
-                                   $from, $num);
+                                   (int)$from, (int)$num);
             }
         }
 

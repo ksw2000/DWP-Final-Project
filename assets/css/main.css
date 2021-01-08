@@ -324,9 +324,10 @@ nav div a{
 /*-----------------------------------------ChatBox--------------------------------------*/
 div.chatbox
 {
-  width:calc(100% - 40px);
+  width:100%;
   height:calc(90vh - 50px);
   background-color:#36362e;
+  margin-bottom: 40px;
 }
 
 
@@ -372,9 +373,10 @@ div.chatbox .input
 
 div.chatbox .input .input_text_box
 {
+  box-sizing: border-box;
   position:absolute;
-  width:calc(80% - 20px);
-  height:20px;
+  width:calc(100% - 80px);
+  line-height:20px;
   border:1px solid transparent;
   border-radius:5px;
   padding:5px;
@@ -419,7 +421,7 @@ div.chatbox .main_box .row .left
   border-radius:5px;
   word-wrap: break-word;
   background-color:rgb(240, 224, 203);
-  
+
 }
 
 div.chatbox .main_box .row .left::after

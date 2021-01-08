@@ -35,5 +35,13 @@ class DB{
     public function close(){
         $this->conn->close();
     }
+
+    public function err(){
+        return $this->err !== "";
+    }
+
+    public function success(){
+        return $this->err === "";
+    }
 }
 ?>

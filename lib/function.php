@@ -1,18 +1,13 @@
 <?php
-function text_r($tw, $cn, $en = null){
-    if($en == null){
-        $en = "英譯：".$tw;
-    }
+function text_r($tw, $cn = null, $en = null){
+    if($en == null) $en = $tw;
+    if($cn == null) $cn = $tw;
 
     global $_SESSION;
     global $_COOKIE;
 
     if(empty($_SESSION['user_info'])){
-        if(isset($_COOKIE['lang'])){
-            $lang = $_COOKIE['lang'];
-        }else{
-            $lang = 2;
-        }
+        $lang = (isset($_COOKIE['lang']))? $_COOKIE['lang'] : 0;
     }else{
         $lang = $_SESSION['user_info']['LANGUAGE'];
     }

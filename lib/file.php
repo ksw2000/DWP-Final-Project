@@ -136,12 +136,12 @@ class FileList{
         if($file_type == null){
             $res = $db->query('SELECT SERVER_NAME, FILE_TYPE, OWNER, LINK, UPLOAD_TIME
                                FROM file ORDER BY UPLOAD_TIME DESC LIMIT ?, ?',
-                               $from, $num);
+                               (int)$from, (int)$num);
         }else{
             $res = $db->query('SELECT SERVER_NAME, FILE_TYPE, OWNER, LINK, UPLOAD_TIME
                                FROM file WHRE FILE_TYPE = ? ORDER BY UPLOAD_TIME DESC
                                LIMIT ?, ?',
-                               $file_type, $from, $num);
+                               $file_type, (int)$from, (int)$num);
         }
 
         $num_rows = $res->num_rows;

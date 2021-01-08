@@ -106,7 +106,7 @@ class Reply{
         // detect next
         $num++;
         $res = $db->query("SELECT COUNT(`FLOOR`) as num FROM reply
-                           WHERE ARTICLE_SERIAL = ? ORDER BY `FLOOR` ASC LIMIT ?, ?", $article_serial, $from, $num);
+                           WHERE ARTICLE_SERIAL = ? ORDER BY `FLOOR` ASC LIMIT ?, ?", $article_serial, (int)$from, (int)$num);
         $row = $res->fetch_assoc();
 
         $this->_next = ($row['num'] == $num)? $from + $num - 1 : -1;

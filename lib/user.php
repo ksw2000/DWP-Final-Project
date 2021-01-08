@@ -65,7 +65,7 @@ class User{
                            LANGUAGE, PERMISSION, READTIME)
                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         $id, $salt, SELF::hash($password, $salt), htmlentities($name), $email,
-        (int)$lang, (int)$permission, time(), "{}");
+        (int)$lang, (int)$permission, time());
         return (!$res)? FALSE : TRUE;
     }
 
@@ -269,7 +269,7 @@ class User{
 
     public static function update_read_time($user_id){
         $db = new DB;
-        $db->query("UPDATE user SET READTIME =? WHERE ID = ?", time(), $user_id);
+        $db->query("UPDATE user SET READTIME = ? WHERE ID = ?", time(), $user_id);
 
         return $db->err === "";
     }
@@ -349,7 +349,7 @@ class User{
     public static function forget_pwd($email_or_id){
         $db = new DB;
         $res = $db->query("SELECT COUNT('ID') as num, EMAIL, ID FROM user
-                           WHERE ID = ? and EMAIL = ?", $email_or_id, $email_or_id);
+                           WHERE ID = ? or EMAIL = ?", $email_or_id, $email_or_id);
 
         $row = $res->fetch_assoc();
         if($row['num'] == 0) return FALSE;
@@ -359,17 +359,16 @@ class User{
 
         do{
             $token = random(256);
-            $db->query("SELECT COUNT(TOKEN) as num FROM user_forget_pwd
-                        WHERE TOKEN = ?", $token);
-            $row = $res->fetch_assoc();
-        }while($row['num'] != 0);
+            $res = $db->query("SELECT COUNT(TOKEN) as num FROM user_forget_pwd
+                               WHERE TOKEN = ?", $token);
+        }while($res->fetch_assoc()['num'] != 0);
 
         // delete expired token
         $db->query("DELETE FROM user_forget_pwd WHERE EXPIRE < ?", time());
 
         // add token
         $expire = time() + 20 * 60;
-        $db->query("INSERT INTO `user_forget_pwd`(`TOKEN`, `ID`, `EXPIRE`)
+        $db->query("INSERT INTO user_forget_pwd(TOKEN, ID, EXPIRE)
                     VALUES (?, ?, ?)", $token, $row['ID'], $expire);
 
         Email::send_forget_pwd($row['EMAIL'], $token);
@@ -423,10 +422,10 @@ class UserList{
         $this->_user_list = $db->query("SELECT ID, NAME, PROFILE,
                     PERMISSION, ONLINE, DIVING
                     FROM user WHERE ID <> ? LIMIT ?, ?",
-                    $this->_user_id, $from, $num);
+                    $this->_user_id, (int)$from, (int)$num);
 
         $num++;
-        $res2 = $db->query("SELECT COUNT(ID) as num FROM user WHERE ID <> ? LIMIT ?, ?", $this->_user_id, $from, $num);
+        $res2 = $db->query("SELECT COUNT(ID) as num FROM user WHERE ID <> ? LIMIT ?, ?", $this->_user_id, (int)$from, (int)$num);
         $row2 = $res2->fetch_assoc();
 
         $this->_next = ($row2['num'] == $num)? $from + $num - 1 : -1;

@@ -1,11 +1,11 @@
 <?php
 class Email{
-    const DOMAIN = 'him.had.name';
+    const DOMAIN = 'longer.had.name';
 
     public static function send_forget_pwd($to, $token){
         $url     = 'https://'.SELF::DOMAIN.'/login?reset_pwd&token='.$token;
         $subject = '重設密碼';
-        $msg     = '點選以下連結以重設密碼：'.$url.'';
+        $msg     = '點選以下連結以重設密碼：'.$url;
         $headers = 'From: admin@'.SELF::DOMAIN;
 
         mail($to, $subject, $msg, $headers);

@@ -62,12 +62,12 @@ class PunishList{
         }
         $db = new DB;
         $this->_punishment_list = $db->query('SELECT * FROM `punishment` '.$where.'
-                   ORDER BY `SERIAL` DESC LIMIT ?, ?', $from, $num);
+                   ORDER BY `SERIAL` DESC LIMIT ?, ?', (int)$from, (int)$num);
 
         $num++;
         $res = $db->query('SELECT COUNT(SERIAL) as num
                            FROM `punishment` '.$where.'
-                           ORDER BY `SERIAL` DESC LIMIT ?, ?', $from, $num);
+                           ORDER BY `SERIAL` DESC LIMIT ?, ?', (int)$from, (int)$num);
 
         $this->_next = ($res->fetch_assoc()['num'] == $num)? $from + $num - 1 : -1;
         $db->close();

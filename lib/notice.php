@@ -16,7 +16,7 @@ class Notice{
         $res = $db->query('INSERT INTO notice(ID_FROM, ID_TO, TYPE,
                            LINK, `TIME`) VALUES (?, ?, ?, ?, ?)',
                            $id_from, $id_to, $type, $link, time());
-        return (bool)$res;
+        return $db->success();
     }
 
     public static function delete($id_from, $id_to, $type, $link){
@@ -26,7 +26,7 @@ class Notice{
         $res = $db->query('DELETE FROM notice WHERE ID_FROM = ?
                            and ID_TO = ? and TYPE = ? and LINK = ?',
                            $id_from, $id_to, $type, $link);
-        return (bool)$res;
+        return $db->success();
     }
 
     public static function reply($id_from, $reply_serial, $delete = !SELF::DELETE){
@@ -69,22 +69,23 @@ class Notice{
         $db = new DB;
         $res = $db->query('UPDATE notice SET ALREADY_READ = 1
                            WHERE NOTICE_SERIAL = ?', $notice_serial);
-        return (bool)$res;
+        return $db->success();
     }
 
     public static function get_info_by_serial($serial){
         $db = new DB;
         $res = $db->query("SELECT * FROM notice WHERE NOTICE_SERIAL = ?", $serial);
 
-        return ($res->num_rows == 0)? array() : $res->fetch_assoc();
+        return ($res)? array() : $res->fetch_assoc();
     }
 
     public static function get_not_read_num($user_id){
         $db = new DB;
-        $res = $db->query('SELECT `NOTICE_SERIAL` FROM `notice` WHERE `TIME` > ?',
-                           User::get_user_public_info($user_id)['READTIME']);
+        $res = $db->query(
+            'SELECT COUNT(NOTICE_SERIAL) as num FROM notice WHERE `TIME` > ?',
+             (int)(User::get_user_public_info($user_id)['READTIME']));
 
-        return $res->num_rows;
+        return $res->fetch_assoc()['num'];
     }
 
     public static function delete_by_serial($serial){

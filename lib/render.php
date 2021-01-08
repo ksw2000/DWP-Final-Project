@@ -462,7 +462,7 @@ function render_bio($user_info, $include_edit_area = FALSE){
     }
 
     $ret .= '<div id="bio-list"><ul>';
-    $ret .= '<li><i class="material-icons">message</i><a href="http://localhost/chat/'.$user_info['ID'].'">'.text_r('傳訊息', '传讯息','Chat').'</a></li>';
+    $ret .= '<li><i class="material-icons">message</i><a href="/chat/'.$user_info['ID'].'">'.text_r('傳訊息', '传讯息','Chat').'</a></li>';
     $ret .= '<li><i class="material-icons">adjust</i>'.$online.'</li>';
     $ret .= ($birthday != '')? '<li><i class="material-icons">cake</i>'.$birthday.'</li>' : '';
     $ret .= ($hobby != '')? '<li><i class="material-icons">sentiment_satisfied</i>'.$hobby.'</li>' : '';

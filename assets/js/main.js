@@ -287,7 +287,7 @@ function change_list_view_mode(mode){
 
 function pjax(url, title){
     document.title = title;
-    window.history.pushState({
+    window.history.replaceState({
         index: url
     }, title, url);
 }
